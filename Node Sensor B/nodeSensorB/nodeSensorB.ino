@@ -2,6 +2,7 @@
 #include <SoftwareSerial.h>
 SoftwareSerial xbee( 18, 19 );
 
+// Usually COM 4
 //ph-4502C
 #include <Arduino.h>
 int pHSense = A0;

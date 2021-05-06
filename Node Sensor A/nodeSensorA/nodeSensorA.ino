@@ -1,3 +1,4 @@
+// Usually COM 3
 // DHT-11
 #include "DHT.h"
 #define DHTPIN 2
