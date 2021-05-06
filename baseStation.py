@@ -21,9 +21,6 @@ mydb = mysql.connector.connect(
   database="pemantaurumah"
 )
 
-now = datetime.now()
-currentTime = now.strftime("%H:%M:%S")
-
 # ====insert data to database====
 def insertDataToDB(tipeSensor,data,time):
     cursor = mydb.cursor()
