@@ -5,17 +5,16 @@ if (!defined('BASEPATH'))
 
 class Pemantauan extends CI_Model
 {
-
 	public function __construct()
 	{
 		parent::__construct();
-		$this->db = $this->load->database('localdb', TRUE);
+		$this->db = $this->load->database();
 	}
 
-	//get All Pemantauan Data
-	public function getAllPerusahaanData()
+	public function getAllReading()
 	{
 		$query = $this->db
 			->get('sensorReading');
 		return $query->result();
 	}
+}
