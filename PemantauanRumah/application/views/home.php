@@ -16,7 +16,7 @@
         <h1 class="text-center mt-5 text-white" style=" color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
             Welcome to Pemantauan Rumah
         </h1>
-        
+        <?php print_r($reading);exit();?>
     </header>
 
     <content>

@@ -12,7 +12,7 @@ class C_Home extends CI_Controller
 
     public function loadHome()
     {
-        $this->data['readings'] = $this->Pemantauan->getAllReading();
+        $this->data['reading'] = $this->Pemantauan->getAllReading();
         
         $this->nav['current_nav'] = "home";
         $this->load->view('header');
