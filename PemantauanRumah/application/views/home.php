@@ -16,11 +16,17 @@
         <h1 class="text-center mt-5 text-white" style=" color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
             Welcome to Pemantauan Rumah
         </h1>
-        <?php print_r($reading);exit();?>
     </header>
 
     <content>
-        
+        <div class="container">
+            temperature = <?php echo $temperature[0]->pengukuran ?> <br>
+            ph = <?php echo $ph[0]->pengukuran ?> <br>
+            humidity = <?php echo $humidity[0]->pengukuran ?> <br>
+            lpg = <?php echo $lpg[0]->pengukuran ?> <br>
+            carbon = <?php echo $carbon[0]->pengukuran ?> <br>
+            smoke = <?php echo $smoke[0]->pengukuran ?> <br>
+        </div>
     </content>
 </body>
 

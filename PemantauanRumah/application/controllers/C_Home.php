@@ -12,7 +12,13 @@ class C_Home extends CI_Controller
 
     public function loadHome()
     {
-        $this->data['reading'] = $this->Pemantauan->getAllReading();
+        //list of data
+        $this->data['ph'] = $this->Pemantauan->getPH();
+        $this->data['humidity'] = $this->Pemantauan->getHumidity();
+        $this->data['temperature'] = $this->Pemantauan->getTemperature();
+        $this->data['lpg'] = $this->Pemantauan->getLPG();
+        $this->data['carbon'] = $this->Pemantauan->getCarbon();
+        $this->data['smoke'] = $this->Pemantauan->getSmoke();
         
         $this->nav['current_nav'] = "home";
         $this->load->view('header');
