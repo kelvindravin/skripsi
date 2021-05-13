@@ -15,6 +15,11 @@
                                         } ?>" href="<?php echo site_url('home') ?>">Home</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link <?php if ($current_nav == "history") {
+                                            echo " active";
+                                        } ?>" href="<?php echo site_url('history') ?>">History</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?php if ($current_nav == "about") {
                                             echo " active";
                                         } ?>" href="<?php echo site_url('about') ?>">About</a>
