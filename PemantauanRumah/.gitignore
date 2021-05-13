@@ -1,7 +1,7 @@
 .DS_Store
 
 application/cache/*
-application/config/database.php
+PemantauanRumah/application/config/database.php
 !application/cache/index.html
 
 application/logs/*
