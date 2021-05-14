@@ -13,33 +13,73 @@
     <?php } ?>
 
     <header>
-        <h1 class="text-center mt-5 text-white" style=" color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
-            Welcome to Pemantauan Rumah
+        <h1 class="text-center mt-5">
+            Status Sensor
         </h1>
+        <h3 class="text-center mb-4">
+            <!-- Insert Sensor Status Here -->
+            <span class="badge badge-danger">Offline</span>
+        </h3>
     </header>
 
     <content>
         <div class="container">
-            <div class="row">
-                <div class="col-sm-3">
-                    Temperature!
+            <div class="row text-center">
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Temperatur Udara</h5>
+                            <hr>
+                            <span id="temperature" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    Humidity!
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Kelembaban Udara</h5>
+                            <hr>
+                            <span id="humidity" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    pH!
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">pH Air</h5>
+                            <hr>
+                            <span id="ph" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    LPG!
+            <div class="row text-center mt-4">
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Kadar Gas LPG</h5>
+                            <hr>
+                            <span id="lpg" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    Carbon!
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Kadar Gas Carbon Monoxide</h5>
+                            <hr>
+                            <span id="carbon" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    Smoke!
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Kadar Asap</h5>
+                            <hr>
+                            <span id="smoke" class="sensing-value"><strong></strong></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,3 +87,26 @@
 </body>
 
 </html>
+
+<!-- Realtime Update Script -->
+<script>
+    $(document).ready(function() {
+        setInterval(function() {
+            $.ajax({
+                url: "<?= base_url() ?>C_Home/getRealtimeUpdate",
+                type: "POST",
+                dataType: "json",
+                data: {},
+                success: function(data) {
+                    // replace all values and refresh the display
+                    document.getElementById("temperature").innerHTML = data.newTemperature;
+                    document.getElementById("humidity").innerHTML = data.newHumidity;
+                    document.getElementById("ph").innerHTML = data.newPh;
+                    document.getElementById("lpg").innerHTML = data.newLPG;
+                    document.getElementById("carbon").innerHTML = data.newCO;
+                    document.getElementById("smoke").innerHTML = data.newSmoke;
+                }
+            });
+        }, 10000);
+    })
+</script>

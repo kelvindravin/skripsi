@@ -4,7 +4,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="icon" href="./assets/images/dotaIcon.ico">
+    <link rel="icon" href="./assets/images/UNPAR logo.ico">
     <!-- Bootstrap -->
     <link rel='stylesheet' type='text/css' href='./assets/Bootstrap 4/bootstrap.min.css' />
     <script src="./assets/Bootstrap 4/jquery.min.js"></script>

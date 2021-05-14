@@ -1,57 +1,28 @@
 /* Home */
 
-.home-navbar{
-    background-color: #424242;
+.home-navbar {
+    background-color: #3e87b5;
 }
 
-.footer{
-    background-color: #424242;
-    color:white;
+.footer {
+    background-color: #0b669f;
+    color: white;
 }
 
-a.nav-link{
+a.nav-link {
     color: white;
     font-size: 24px;
 }
 
-a.nav-link:hover{
-    background-color:gray;
+a.nav-link:hover {
+    background-color: rgb(70, 148, 115);
 }
 
-a.nav-link.active{
-    background-color:#660000;
+a.nav-link.active {
+    background-color: #75d175;
 }
 
-/* Statistic */
-
-.logout-id-btn{
-    background-color: #a73636;
-    color :white;
-}
-
-/* Text Size */
-
-.txt-size-24{
-    font-size: 24px;
-}
-
-.txt-size-20{
-    font-size: 20px;
-}
-
-/* Cards for Stats */
-.stats-card-top{
-    
-}
-
-.green{
-    color: green;
-}
-
-.yellow{
-    color:yellow;
-}
-
-.red{
-    color:red;
+.sensing-value{
+    color: grey;
+    font-size: 40px;
 }

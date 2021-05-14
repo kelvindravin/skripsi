@@ -58,7 +58,6 @@ class Pemantauan extends CI_Model
 		return $query->result();
 	}
 	
-	
 	public function getPH(){
 		$query = $this->db
 			->where('sensorPengukur','pH')

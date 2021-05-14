@@ -20,6 +20,8 @@
                 <thead>
                     <tr>
                         <th>Timestamp Pemantauan</th>
+                        <th>Tipe Sensor</th>
+                        <th>Nilai Pengukuran</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,6 +30,8 @@
                     ?>
                         <tr>
                             <td><?php echo $value->timestamp; ?></td>
+                            <td><?php echo $value->sensorPengukur; ?></td>
+                            <td><?php echo $value->pengukuran; ?></td>
                         </tr>
                     <?php
                     }
@@ -41,6 +45,13 @@
 </html>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#table_history').DataTable()
+        $('#table_history').DataTable({
+            pageLength: 6,
+            ordering: false,
+            lengthMenu: [
+                [6, 12],
+                [6, 12]
+            ]
+        })
     });
 </script>
