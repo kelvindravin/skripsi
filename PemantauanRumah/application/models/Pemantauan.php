@@ -65,4 +65,27 @@ class Pemantauan extends CI_Model
 			->get('sensorReading');
 		return $query->result();
 	}
+	
+	public function getSearchData($start,$end,$parameters){
+		//print_r($parameters);exit();
+		$parameterFilter = "(";
+		
+		foreach($parameters as $key => $value){
+			$parameterFilter .= "sensorPengukur = '$value'";
+			if($key < sizeof($parameters)-1){
+				$parameterFilter .= " OR ";
+			}
+		}
+		
+		$parameterFilter.= ")";
+		
+		//print_r($parameterFilter);exit();
+		
+		$query = $this->db
+			->where('DATE(timestamp) BETWEEN "'. date('Y-m-d', strtotime($start)). '" and "'. date('Y-m-d', strtotime($end)).'"')
+			->where($parameterFilter)
+			->get('sensorReading');
+		//print_r($this->db->last_query());exit();
+		return $query->result();
+	}
 }

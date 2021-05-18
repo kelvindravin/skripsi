@@ -27,13 +27,28 @@ class C_Home extends CI_Controller
         $this->load->view('footer');
     }
 
-    public function loadHistory(){
+    public function loadHistorySearch(){
         $this->nav['current_nav'] = "history";
-        $this->data['dataPengukuran'] = $this->Pemantauan->getAllReading();
 
         $this->load->view('header');
         $this->load->view('navbar',$this->nav);
-        $this->load->view('history',$this->data);
+        $this->load->view('historySearch');
+        $this->load->view('footer');
+    }
+    
+    public function filterSearch(){
+        $this->nav['current_nav'] = "history";
+        $searchInput = $this->input->post();
+        
+        if(empty($searchInput['parameter'])){
+                $searchInput['parameter'] = array('temperature','humidity','ph','lpg','carbon','smoke');
+        }
+        
+        $this->data['dataHistory'] = $this->Pemantauan->getSearchData($searchInput['tanggalMulai'], $searchInput['tanggalSelesai'], $searchInput['parameter']);
+
+        $this->load->view('header');
+        $this->load->view('navbar',$this->nav);
+        $this->load->view('historyView',$this->data);
         $this->load->view('footer');
     }
 
@@ -45,14 +60,25 @@ class C_Home extends CI_Controller
         $this->load->view('footer');
     }
 
-	public function getRealtimeUpdate(){
-		$result['newTemperature'] = $this->Pemantauan->getTemperature()[0]->pengukuran;
+        public function getRealtimeUpdate(){
+        $result['newTemperature'] = $this->Pemantauan->getTemperature()[0]->pengukuran;
+        $result['timestampTemperature'] = $this->Pemantauan->getTemperature()[0]->timestamp;
+        
         $result['newHumidity'] = $this->Pemantauan->getHumidity()[0]->pengukuran;
+        $result['timestampHumidity'] = $this->Pemantauan->getHumidity()[0]->timestamp;
+        
         $result['newPh'] = $this->Pemantauan->getPH()[0]->pengukuran;
+        $result['timestampPh'] = $this->Pemantauan->getPH()[0]->timestamp;
+        
         $result['newLPG'] = $this->Pemantauan->getLPG()[0]->pengukuran;
+        $result['timestampLPG'] = $this->Pemantauan->getLPG()[0]->timestamp;
+        
         $result['newCO'] = $this->Pemantauan->getCarbon()[0]->pengukuran;
+        $result['timestampCO'] = $this->Pemantauan->getCarbon()[0]->timestamp;
+        
         $result['newSmoke'] = $this->Pemantauan->getSmoke()[0]->pengukuran;
-
+        $result['timestampSmoke'] = $this->Pemantauan->getSmoke()[0]->timestamp;
+        
         echo json_encode($result);
 	}
 }

@@ -9,12 +9,13 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
-        <h1 class="text-center mt-5 text-white" style=" color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
-            History of Pemantauan
+        <h1 class="text-center mt-5 mb-5">
+            History Pemantauan Rumah
         </h1>
     </header>
 
     <content>
+        <!-- View Monitoring -->
         <div class="container">
             <table id="table_history" class="table table-striped dt-responsive nowrap container-fluid">
                 <thead>
@@ -26,7 +27,7 @@
                 </thead>
                 <tbody>
                     <?php
-                    foreach ($dataPengukuran as $key => $value) {
+                    foreach ($dataHistory as $key => $value) {
                     ?>
                         <tr>
                             <td><?php echo $value->timestamp; ?></td>
@@ -39,6 +40,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="text-center">
+			<a href="<?php echo base_url('history'); ?>" class="btn btn-danger">Kembali</a>
+        </div>
     </content>
 </body>
 
@@ -46,11 +50,11 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#table_history').DataTable({
-            pageLength: 6,
+            pageLength: 5,
             ordering: false,
             lengthMenu: [
-                [6, 12],
-                [6, 12]
+                [5, 10],
+                [5, 10]
             ]
         })
     });

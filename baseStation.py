@@ -52,16 +52,16 @@ while True:
                      insertDataToDB("temperature",nilai,datetime.now())
                  elif value[0] == "L":
                      nilai = value[1:]
-                     insertDataToDB("LPG",nilai,datetime.now())
+                     insertDataToDB("lpg",nilai,datetime.now())
                  elif value[0] == "C":
                      nilai = value[1:]
-                     insertDataToDB("Carbon",nilai,datetime.now())
+                     insertDataToDB("carbon",nilai,datetime.now())
                  elif value[0] == "A":
                      nilai = value[1:]
-                     insertDataToDB("Smoke",nilai,datetime.now())
+                     insertDataToDB("smoke",nilai,datetime.now())
                  elif value[0] == "P":
                      nilai = value[1:]
-                     insertDataToDB("pH",nilai,datetime.now())
+                     insertDataToDB("ph",nilai,datetime.now())
                      
              print("Data inserted into database! Inserted : ")
              print(parameters)

@@ -8,18 +8,10 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <?php if ($this->session->flashdata('error')) { ?>
-        <div class="alert alert-danger"> <?= $this->session->flashdata('error') ?> </div>
-    <?php } ?>
-
     <header>
-        <h1 class="text-center mt-5">
-            Status Sensor
+        <h1 class="text-center mt-5 mb-5">
+            Status Pemantauan Rumah
         </h1>
-        <h3 class="text-center mb-4">
-            <!-- Insert Sensor Status Here -->
-            <span class="badge badge-danger">Offline</span>
-        </h3>
     </header>
 
     <content>
@@ -31,6 +23,10 @@
                             <h5 class="card-title">Temperatur Udara</h5>
                             <hr>
                             <span id="temperature" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_temperature">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_temperature">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -40,6 +36,10 @@
                             <h5 class="card-title">Kelembaban Udara</h5>
                             <hr>
                             <span id="humidity" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_humidity">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_humidity">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -49,6 +49,10 @@
                             <h5 class="card-title">pH Air</h5>
                             <hr>
                             <span id="ph" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_ph">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_ph">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -60,15 +64,23 @@
                             <h5 class="card-title">Kadar Gas LPG</h5>
                             <hr>
                             <span id="lpg" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_lpg">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_lpg">N/A</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Kadar Gas Carbon Monoxide</h5>
+                            <h5 class="card-title">Kadar Gas Karbon</h5>
                             <hr>
                             <span id="carbon" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_carbon">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_carbon">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -78,6 +90,10 @@
                             <h5 class="card-title">Kadar Asap</h5>
                             <hr>
                             <span id="smoke" class="sensing-value"><strong></strong></span>
+                            <hr>
+                            Status Sensor : <span id="sensor_status_smoke">N/A</span>
+                            <br>
+                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_smoke">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -100,11 +116,22 @@
                 success: function(data) {
                     // replace all values and refresh the display
                     document.getElementById("temperature").innerHTML = data.newTemperature;
+                    document.getElementById("monitoring_time_temperature").innerHTML = data.timestampTemperature;
+                    
                     document.getElementById("humidity").innerHTML = data.newHumidity;
+                    document.getElementById("monitoring_time_humidity").innerHTML = data.timestampHumidity;
+                    
                     document.getElementById("ph").innerHTML = data.newPh;
+                    document.getElementById("monitoring_time_ph").innerHTML = data.timestampPh;
+                    
                     document.getElementById("lpg").innerHTML = data.newLPG;
+                    document.getElementById("monitoring_time_lpg").innerHTML = data.timestampLPG;
+                    
                     document.getElementById("carbon").innerHTML = data.newCO;
+                    document.getElementById("monitoring_time_carbon").innerHTML = data.timestampCO;
+                    
                     document.getElementById("smoke").innerHTML = data.newSmoke;
+                    document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
                 }
             });
         }, 5000);
