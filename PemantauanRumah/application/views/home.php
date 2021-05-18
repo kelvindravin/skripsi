@@ -93,7 +93,7 @@
     $(document).ready(function() {
         setInterval(function() {
             $.ajax({
-                url: "<?= base_url() ?>C_Home/getRealtimeUpdate",
+                url: "<?= site_url('C_Home/getRealtimeUpdate') ?>",
                 type: "POST",
                 dataType: "json",
                 data: {},
@@ -107,6 +107,6 @@
                     document.getElementById("smoke").innerHTML = data.newSmoke;
                 }
             });
-        }, 10000);
+        }, 5000);
     })
 </script>

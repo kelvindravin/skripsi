@@ -10,7 +10,7 @@ serial = serial.Serial(
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
-    timeout=5
+    timeout=2.5
 )
 
 #database details
@@ -63,9 +63,8 @@ while True:
                      nilai = value[1:]
                      insertDataToDB("pH",nilai,datetime.now())
                      
-         print("Data inserted into database!")
-             
-#              print(humiditas + " " + temperatur + " " + lpg + " " + carbon + " " + asap + " " + phAir)
+             print("Data inserted into database! Inserted : ")
+             print(parameters)
              
 #      insertDataToDB(data,datetime.now())
 

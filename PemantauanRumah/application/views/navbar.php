@@ -19,11 +19,11 @@
                                             echo " active";
                                         } ?>" href="<?php echo site_url('history') ?>">Histori</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link <?php if ($current_nav == "about") {
                                             echo " active";
                                         } ?>" href="<?php echo site_url('about') ?>">Tentang</a>
-                </li>
+                </li> -->
             </ul>
         </div>
     </nav>
