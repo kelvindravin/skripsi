@@ -21,6 +21,20 @@ mydb = mysql.connector.connect(
   database="pemantaurumah"
 )
 
+# ====register user account====
+def insertUserToDB(email,password):
+    cursor = mydb.cursor()
+
+    query = "INSERT INTO user (email,password) VALUES (%s,%s)"
+    val = (email,password)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
+    print("account registered!")
+
+# ====end of register user account====
+
 # ====insert data to database====
 def insertDataToDB(tipeSensor,data,time):
     cursor = mydb.cursor()
@@ -34,6 +48,9 @@ def insertDataToDB(tipeSensor,data,time):
 #     print(cursor.rowcount, "record diterima.")
 
 # ====end of insert data====
+
+#user insertion
+#insertUserToDB("2017730022@student.unpar.ac.id", "2017730022")
 
 while True:
      data = serial.readline().decode("ascii").strip()
@@ -65,8 +82,6 @@ while True:
                      
              print("Data inserted into database! Inserted : ")
              print(parameters)
-             
-#      insertDataToDB(data,datetime.now())
 
 # ====select data from database====
 # 

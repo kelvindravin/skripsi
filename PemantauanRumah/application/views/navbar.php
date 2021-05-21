@@ -19,13 +19,10 @@
                                             echo " active";
                                         } ?>" href="<?php echo site_url('history') ?>">Histori</a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link <?php if ($current_nav == "about") {
-                                            echo " active";
-                                        } ?>" href="<?php echo site_url('about') ?>">Tentang</a>
-                </li> -->
             </ul>
         </div>
+            <div class="float-right mx-5 text-white"><h5>Hello, <?php echo $this->session->userdata('email')?></h5></div>
+            <a class="nav-link btn btn-danger" href="<?php echo site_url('logout') ?>">Logout</a>
     </nav>
 </body>
 

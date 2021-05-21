@@ -9,9 +9,15 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
-        <h1 class="text-center mt-5 mb-5">
+        <h1 class="text-center mt-5">
             Status Pemantauan Rumah
         </h1>
+        <div class="text-center mb-5">
+            <h5>
+                Status Sensing : 
+            </h5>
+            <span class="badge badge-danger">Offline</span>
+        </div>
     </header>
 
     <content>
@@ -22,10 +28,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Temperatur Udara</h5>
                             <hr>
-                            <span id="temperature" class="sensing-value"><strong></strong></span>
+                            <span id="temperature" class="sensing-value"><strong>N/A</strong></span> °C
                             <hr>
-                            Status Sensor : <span id="sensor_status_temperature">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_temperature">N/A</span>
                         </div>
                     </div>
@@ -35,10 +39,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Kelembaban Udara</h5>
                             <hr>
-                            <span id="humidity" class="sensing-value"><strong></strong></span>
+                            <span id="humidity" class="sensing-value"><strong>N/A</strong></span> RH
                             <hr>
-                            Status Sensor : <span id="sensor_status_humidity">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_humidity">N/A</span>
                         </div>
                     </div>
@@ -48,10 +50,8 @@
                         <div class="card-body">
                             <h5 class="card-title">pH Air</h5>
                             <hr>
-                            <span id="ph" class="sensing-value"><strong></strong></span>
+                            <span id="ph" class="sensing-value"><strong>N/A</strong></span>
                             <hr>
-                            Status Sensor : <span id="sensor_status_ph">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_ph">N/A</span>
                         </div>
                     </div>
@@ -63,10 +63,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas LPG</h5>
                             <hr>
-                            <span id="lpg" class="sensing-value"><strong></strong></span>
+                            <span id="lpg" class="sensing-value"><strong>N/A</strong></span> PPM
                             <hr>
-                            Status Sensor : <span id="sensor_status_lpg">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_lpg">N/A</span>
                         </div>
                     </div>
@@ -76,10 +74,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas Karbon</h5>
                             <hr>
-                            <span id="carbon" class="sensing-value"><strong></strong></span>
+                            <span id="carbon" class="sensing-value"><strong>N/A</strong></span> PPM
                             <hr>
-                            Status Sensor : <span id="sensor_status_carbon">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_carbon">N/A</span>
                         </div>
                     </div>
@@ -89,10 +85,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Kadar Asap</h5>
                             <hr>
-                            <span id="smoke" class="sensing-value"><strong></strong></span>
+                            <span id="smoke" class="sensing-value"><strong>N/A</strong></span> PPM
                             <hr>
-                            Status Sensor : <span id="sensor_status_smoke">N/A</span>
-                            <br>
                             Timestamp Data : <span class="badge badge-info" id="monitoring_time_smoke">N/A</span>
                         </div>
                     </div>

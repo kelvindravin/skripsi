@@ -8,6 +8,31 @@ class C_Home extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Pemantauan');
+        $this->load->model('User');
+    }
+    
+    public function loadLogin(){
+        $this->load->view('header');
+        $this->load->view('login');
+        $this->load->view('footer');
+    }
+    
+    public function loginProcess(){
+        $email = $this->input->post('email');
+        $password = $this->input->post('password');
+        $loginAuthenticator = $this->User->getUserByLogin($email, $password);
+        if ($loginAuthenticator == true) {
+            $this->session->set_userdata('email', $email);
+            redirect(base_url('home'));
+        } else {
+            $this->session->set_flashdata('error', 'Akun tidak terdaftar / data akun tidak sesuai!');
+            redirect(base_url('login'));
+        }
+    }
+    
+    public function logout(){
+        $this->session->sess_destroy();
+        redirect(base_url('login'));
     }
 
     public function loadHome()
