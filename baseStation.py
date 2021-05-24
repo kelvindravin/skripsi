@@ -2,6 +2,14 @@ import serial
 import time
 import mysql.connector
 from datetime import datetime
+import threading
+import os
+
+# Global Variables
+
+appRunning = True
+sensingStatus = False
+
 
 #serial details
 serial = serial.Serial(
@@ -31,7 +39,7 @@ def insertUserToDB(email,password):
     cursor.execute(query, val)
 
     mydb.commit()
-    print("account registered!")
+    print("Account Registered!")
 
 # ====end of register user account====
 
@@ -45,43 +53,115 @@ def insertDataToDB(tipeSensor,data,time):
     cursor.execute(query, val)
 
     mydb.commit()
-#     print(cursor.rowcount, "record diterima.")
 
 # ====end of insert data====
 
-#user insertion
-#insertUserToDB("2017730022@student.unpar.ac.id", "2017730022")
+# for translating True to Online / False to Offline
+def translateStatusIntoWords(status):
+    if status == True:
+        return "Online"
+    else:
+        return "Offline"
 
-while True:
-     data = serial.readline().decode("ascii").strip()
-     if data != "":
-         parameters = data.split()
-         
-         if len(parameters)== 6:
-             
-             #splitting parameter from value and insert to DB
-             for value in parameters:
-                 if value[0] == "H":
-                     nilai = value[1:]
-                     insertDataToDB("humidity",nilai,datetime.now())
-                 elif value[0] == "T":
-                     nilai = value[1:]
-                     insertDataToDB("temperature",nilai,datetime.now())
-                 elif value[0] == "L":
-                     nilai = value[1:]
-                     insertDataToDB("lpg",nilai,datetime.now())
-                 elif value[0] == "C":
-                     nilai = value[1:]
-                     insertDataToDB("carbon",nilai,datetime.now())
-                 elif value[0] == "A":
-                     nilai = value[1:]
-                     insertDataToDB("smoke",nilai,datetime.now())
-                 elif value[0] == "P":
-                     nilai = value[1:]
-                     insertDataToDB("ph",nilai,datetime.now())
-                     
-             print("Data inserted into database! Inserted : ")
-             print(parameters)
+# opening thread and start sensing until it's turned off
+class sensorSense():
+    def __init__(self, interval = 2.5):
+        self.interval = interval
+
+        sensingThread = threading.Thread(target=self.run, args=())
+        sensingThread.daemon = True
+
+        sensingThread.start()
+
+    def run(self):
+        while sensingStatus:
+            data = serial.readline().decode("ascii").strip()
+            if data != "":
+                parameters = data.split()
+                
+                if len(parameters)== 6:
+                    
+                    #splitting parameter from value and insert to DB
+                    for value in parameters:
+                        if value[0] == "H":
+                            nilai = value[1:]
+                            insertDataToDB("humidity",nilai,datetime.now())
+                        elif value[0] == "T":
+                            nilai = value[1:]
+                            insertDataToDB("temperature",nilai,datetime.now())
+                        elif value[0] == "L":
+                            nilai = value[1:]
+                            insertDataToDB("lpg",nilai,datetime.now())
+                        elif value[0] == "C":
+                            nilai = value[1:]
+                            insertDataToDB("carbon",nilai,datetime.now())
+                        elif value[0] == "A":
+                            nilai = value[1:]
+                            insertDataToDB("smoke",nilai,datetime.now())
+                        elif value[0] == "P":
+                            nilai = value[1:]
+                            insertDataToDB("ph",nilai,datetime.now())
+                            
+                    # print("Data inserted into database! Inserted : ")
+                    # print(parameters)
+
+            time.sleep(self.interval)
+
+# Starting Application
+
+# ==== Main Menu ====
+def mainMenu():
+    print("Status Sensor : " + translateStatusIntoWords(sensingStatus))
+    print("=============================================")
+    print("Menu :")
+    print("1. Mulai Pencatatan Sensing")
+    print("2. Berhenti Pencatatan Sensing")
+    print("3. Cek Status Seluruh Sensor")
+    print("4. Daftar Account User Website Pemantauan")
+    print("5. Keluar")
+    print("=============================================")
+    print("Silahkan Masukkan Nomor Input :")
+# ==== End of Main Menu ====
+
+print("Selamat Datang pada Aplikasi Sistem Pemantauan Rumah")
+mainMenu()
+userInput = input()
+
+while appRunning:
+    # enabling sensing
+    if userInput == "1" and sensingStatus == False:
+        sensingStatus = True
+        sensorSense()
+        print("Sensing Started!")
+    elif userInput == "2" and sensingStatus == True:
+        sensingStatus = False
+        print("Sensing Stopped!")
+        mainMenu()
+    elif userInput == "3":
+        print("Checking Sensors...It's Fine...")
+        mainMenu()
+    elif userInput == "4":
+        print("Silahkan masukkan email :")
+        email = input()
+        print("Silahkan masukkan password :")
+        password = input()
+        insertUserToDB(email,password)
+        mainMenu()
+    elif userInput == "5":
+        sensingStatus = False
+        appRunning = False
+        print("Sensing dan Aplikasi dimatikan..")
+        print("Selamat Tinggal!")
+        break
+    elif userInput == "menu":
+        mainMenu()
+    else:
+        print("Perintah tidak diketahui \ Perintah sedang dijalankan, silahkan masukkan \"menu\" untuk melihat menu.")
+
+    userInput = input()
+    clear = lambda: os.system('cls')
+    clear()
+# End of Starting Application
 
 # ====select data from database====
 # 
