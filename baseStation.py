@@ -109,8 +109,9 @@ class sensorSense():
 
 # Starting Application
 
-# ==== Main Menu ====
+# ==== Main Menu Component ====
 def mainMenu():
+    time.sleep(1)
     print("Status Sensor : " + translateStatusIntoWords(sensingStatus))
     print("=============================================")
     print("Menu :")
@@ -121,7 +122,7 @@ def mainMenu():
     print("5. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
-# ==== End of Main Menu ====
+# ==== End of Main Menu Component ====
 
 print("Selamat Datang pada Aplikasi Sistem Pemantauan Rumah")
 mainMenu()
@@ -133,6 +134,7 @@ while appRunning:
         sensingStatus = True
         sensorSense()
         print("Sensing Started!")
+        mainMenu()
     elif userInput == "2" and sensingStatus == True:
         sensingStatus = False
         print("Sensing Stopped!")
@@ -157,10 +159,8 @@ while appRunning:
         mainMenu()
     else:
         print("Perintah tidak diketahui \ Perintah sedang dijalankan, silahkan masukkan \"menu\" untuk melihat menu.")
-
     userInput = input()
-    clear = lambda: os.system('cls')
-    clear()
+    
 # End of Starting Application
 
 # ====select data from database====
