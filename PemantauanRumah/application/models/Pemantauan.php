@@ -84,4 +84,11 @@ class Pemantauan extends CI_Model
 			->get('sensorReading');
 		return $query->result();
 	}
+	
+	public function getSensingStatus(){
+		$query = $this->db
+			->select_max('timestamp')
+			->get('sensorReading');
+		return $query->result();
+	}
 }

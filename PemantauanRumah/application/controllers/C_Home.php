@@ -106,4 +106,10 @@ class C_Home extends CI_Controller
         
         echo json_encode($result);
 	}
+        
+        public function getSensingStatus(){
+        $result['sensingStatus'] = $this->Pemantauan->getSensingStatus()[0]->timestamp;
+        
+        echo json_encode($result);
+        }
 }

@@ -79,8 +79,6 @@ class sensorSense():
             if data != "":
                 parameters = data.split()
                 
-                if len(parameters)== 6:
-                    
                     #splitting parameter from value and insert to DB
                     for value in parameters:
                         if value[0] == "H":

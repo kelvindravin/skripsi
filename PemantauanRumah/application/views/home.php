@@ -16,7 +16,7 @@
             <h5>
                 Status Sensing : 
             </h5>
-            <span class="badge badge-danger">Offline</span>
+            <span id="statusSensing">N/A</span>
         </div>
     </header>
 
@@ -102,6 +102,7 @@
 <script>
     $(document).ready(function() {
         setInterval(function() {
+            // realtime update from server
             $.ajax({
                 url: "<?= site_url('C_Home/getRealtimeUpdate') ?>",
                 type: "POST",
@@ -126,6 +127,28 @@
                     
                     document.getElementById("smoke").innerHTML = data.newSmoke;
                     document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
+                }
+            });
+            
+            // checking sensing status
+            $.ajax({
+                url: "<?= site_url('C_Home/getSensingStatus') ?>",
+                type: "POST",
+                dataType: "json",
+                data: {},
+                success: function(status) {
+                    // finding difference between now and last timestamp
+                    var last_timestamp = new Date(status.sensingStatus);
+                    var last_timestamp_seconds = (last_timestamp.getTime() / 1000) + "000";
+                    var curr_timestamp = Date.now();
+                    var difference = curr_timestamp - last_timestamp_seconds;
+                    
+                    //printing offline if the time diff is more than 5 minutes
+                    if((difference/1000) >= 300){
+                        document.getElementById("statusSensing").innerHTML = "<span class=\"badge badge-danger\">Offline</span>"
+                    }else{
+                        document.getElementById("statusSensing").innerHTML = "<span class=\"badge badge-success\">Online</span>"
+                    }
                 }
             });
         }, 5000);
