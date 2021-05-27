@@ -29,7 +29,7 @@ mydb = mysql.connector.connect(
   database="pemantaurumah"
 )
 
-# ====register user account====
+# ====user account====
 def insertUserToDB(email,password):
     cursor = mydb.cursor()
 
@@ -41,7 +41,29 @@ def insertUserToDB(email,password):
     mydb.commit()
     print("Account Registered!")
 
-# ====end of register user account====
+def updateUserNotifikasi(email,notifikasi):
+    mycursor = mydb.cursor()
+
+    sql = """UPDATE user SET notifikasi = %s where email = %s"""
+    val = (notifikasi, email)
+
+    mycursor.execute(sql,val)
+
+    mydb.commit()
+    print("Account Notification Updated!")
+    
+def updateUserPassword(email,password):
+    mycursor = mydb.cursor()
+
+    sql = """UPDATE user SET password = %s where email = %s"""
+    val = (password, email)
+
+    mycursor.execute(sql,val)
+
+    mydb.commit()
+    print("Account Password Updated!")
+    
+# ====user account====
 
 # ====insert data to database====
 def insertDataToDB(tipeSensor,data,time):
@@ -79,26 +101,26 @@ class sensorSense():
             if data != "":
                 parameters = data.split()
                 
-                    #splitting parameter from value and insert to DB
-                    for value in parameters:
-                        if value[0] == "H":
-                            nilai = value[1:]
-                            insertDataToDB("humidity",nilai,datetime.now())
-                        elif value[0] == "T":
-                            nilai = value[1:]
-                            insertDataToDB("temperature",nilai,datetime.now())
-                        elif value[0] == "L":
-                            nilai = value[1:]
-                            insertDataToDB("lpg",nilai,datetime.now())
-                        elif value[0] == "C":
-                            nilai = value[1:]
-                            insertDataToDB("carbon",nilai,datetime.now())
-                        elif value[0] == "A":
-                            nilai = value[1:]
-                            insertDataToDB("smoke",nilai,datetime.now())
-                        elif value[0] == "P":
-                            nilai = value[1:]
-                            insertDataToDB("ph",nilai,datetime.now())
+                #splitting parameter from value and insert to DB
+                for value in parameters:
+                    if value[0] == "H":
+                        nilai = value[1:]
+                        insertDataToDB("humidity",nilai,datetime.now())
+                    elif value[0] == "T":
+                        nilai = value[1:]
+                        insertDataToDB("temperature",nilai,datetime.now())
+                    elif value[0] == "L":
+                        nilai = value[1:]
+                        insertDataToDB("lpg",nilai,datetime.now())
+                    elif value[0] == "C":
+                        nilai = value[1:]
+                        insertDataToDB("carbon",nilai,datetime.now())
+                    elif value[0] == "A":
+                        nilai = value[1:]
+                        insertDataToDB("smoke",nilai,datetime.now())
+                    elif value[0] == "P":
+                        nilai = value[1:]
+                        insertDataToDB("ph",nilai,datetime.now())
                             
                     # print("Data inserted into database! Inserted : ")
                     # print(parameters)
@@ -117,7 +139,9 @@ def mainMenu():
     print("2. Berhenti Pencatatan Sensing")
     print("3. Cek Status Seluruh Sensor")
     print("4. Daftar Account User Website Pemantauan")
-    print("5. Keluar")
+    print("5. Update User Password")
+    print("6. Update Notifikasi User")
+    print("7. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
 # ==== End of Main Menu Component ====
@@ -148,6 +172,20 @@ while appRunning:
         insertUserToDB(email,password)
         mainMenu()
     elif userInput == "5":
+        print("Silahkan masukkan email :")
+        email = input()
+        print("Silahkan masukkan password baru :")
+        password = input()
+        updateUserPassword(email,password)
+        mainMenu()
+    elif userInput == "6":
+        print("Silahkan masukkan email :")
+        email = input()
+        print("Apakah anda ingin menyalakan/mematikan notifikasi? (masukkan 0 = mati ATAU 1 = nyala) :")
+        notifikasi = input()
+        updateUserNotifikasi(email,notifikasi)
+        mainMenu()
+    elif userInput == "7":
         sensingStatus = False
         appRunning = False
         print("Sensing dan Aplikasi dimatikan..")

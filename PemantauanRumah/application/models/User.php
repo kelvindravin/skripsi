@@ -29,4 +29,11 @@ class User extends CI_Model
 			return false;
 		}
 	}
+	
+	public function getEnabledUserNotification(){
+		$query = $this->db
+			->where('notifikasi',1)
+			->get('user');
+		return $query->result();
+	}
 }
