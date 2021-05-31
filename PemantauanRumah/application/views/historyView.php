@@ -50,11 +50,11 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#table_history').DataTable({
-            pageLength: 5,
+            pageLength: 6,
             ordering: false,
             lengthMenu: [
-                [5, 10],
-                [5, 10]
+                [6, 12],
+                [6, 12]
             ]
         })
     });

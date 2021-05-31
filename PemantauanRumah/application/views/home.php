@@ -14,7 +14,7 @@
         </h1>
         <div class="text-center mb-5">
             <h5>
-                Status Sensing : 
+                Status Sensor : 
             </h5>
             <span id="statusSensing">N/A</span>
         </div>
@@ -29,8 +29,10 @@
                             <h5 class="card-title">Temperatur Udara</h5>
                             <hr>
                             <span id="temperature" class="sensing-value"><strong>N/A</strong></span> °C
+                            <br>
+                            <span id="temperature_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_temperature">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_temperature">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -40,8 +42,10 @@
                             <h5 class="card-title">Kelembaban Udara</h5>
                             <hr>
                             <span id="humidity" class="sensing-value"><strong>N/A</strong></span> RH
+                            <br>
+                            <span id="humidity_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_humidity">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_humidity">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -51,8 +55,10 @@
                             <h5 class="card-title">pH Air</h5>
                             <hr>
                             <span id="ph" class="sensing-value"><strong>N/A</strong></span>
+                            <br>
+                            <span id="ph_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_ph">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_ph">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -64,8 +70,10 @@
                             <h5 class="card-title">Kadar Gas LPG</h5>
                             <hr>
                             <span id="lpg" class="sensing-value"><strong>N/A</strong></span> PPM
+                            <br>
+                            <span id="lpg_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_lpg">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_lpg">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -75,8 +83,10 @@
                             <h5 class="card-title">Kadar Gas Karbon</h5>
                             <hr>
                             <span id="carbon" class="sensing-value"><strong>N/A</strong></span> PPM
+                            <br>
+                            <span id="carbon_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_carbon">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_carbon">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -86,8 +96,10 @@
                             <h5 class="card-title">Kadar Asap</h5>
                             <hr>
                             <span id="smoke" class="sensing-value"><strong>N/A</strong></span> PPM
+                            <br>
+                            <span id="smoke_warning"></span>
                             <hr>
-                            Timestamp Data : <span class="badge badge-info" id="monitoring_time_smoke">N/A</span>
+                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_smoke">N/A</span>
                         </div>
                     </div>
                 </div>
@@ -136,22 +148,51 @@
                 data: {},
                 success: function(data) {
                     // counting violation of detection for parameters
-                    if(data.newLPG > 200){
+                    if(data.newLPG > 100){
                         count_lpg++;
+                        document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar gas LPG sudah melebihi batas normal</span>";
                     }else{
                         count_lpg = 0;
+                        document.getElementById("lpg_warning").innerHTML = "";
                     }
                     
                     if(data.newSmoke >= 100){
                         count_smoke++;
+                        document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar asap sudah melebihi batas normal</span>";
                     }else{
                         count_smoke = 0;
+                        document.getElementById("smoke_warning").innerHTML = "";
                     }
                     
-                    if(data.newCO >= 30){
+                    if(data.newCO >= 25){
                         count_carbon++;
+                        document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar gas karbon sudah melebihi batas normal</span>";
                     }else{
                         count_carbon = 0;
+                        document.getElementById("carbon_warning").innerHTML = "";
+                    }
+                    
+                    if(data.newTemperature > 25){
+                        document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-warning\">Suhu ruangan diatas suhu normal ruangan</span>";
+                    }else{
+                        document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-success\">Suhu ruangan normal</span>";
+                    }
+                    
+                    if(data.newHumidity > 70){
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan diatas angka maksimum</span>";
+                    }else if(data.newHumidity < 20){
+                        ocument.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan dibawah angka minimum</span>";
+                    }
+                    else{
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-success\">Humiditas ruangan normal</span>";
+                    }
+                    
+                    if(data.newPh < 7){
+                        document.getElementById("ph_warning").innerHTML = "<span class=\"badge badge-warning\">pH air terlalu asam</span>";
+                    }else if(data.newPh > 8){
+                        document.getElementById("ph_warning").innerHTML = "<span class=\"badge badge-warning\">pH air terlalu basa</span>";
+                    }else{
+                        document.getElementById("ph_warning").innerHTML = "<span class=\"badge badge-success\">pH air netral</span>";
                     }
                     
                     //console.log(count_lpg);
