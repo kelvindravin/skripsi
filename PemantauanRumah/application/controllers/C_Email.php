@@ -46,9 +46,9 @@ class C_Email extends CI_Controller
 			Perhatian,<br>
 					Sistem Monitoring telah mendeteksi keberadaan tanda bahaya dengan detail sebagai berikut :
 					<br><br>
-					Kadar Karbon Monoksida dalam udara : '.$co.' PPM (Batas wajar : 30 PPM)<br>
+					Kadar Karbon Monoksida dalam udara : '.$co.' PPM (Batas wajar : 25 PPM)<br>
 					Kadar Asap dalam udara : '.$smoke.' PPM (Batas wajar : 100 PPM)<br>
-					Kadar LPG dalam udara : '.$lpg.' PPM (Batas wajar : 200 PPM)<br>
+					Kadar LPG dalam udara : '.$lpg.' PPM (Batas wajar : 100 PPM)<br>
 					<br>
 					Berhati-hatilah, dan harap untuk diperiksa kembali kondisi berikut.
 					<br>

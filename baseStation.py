@@ -162,7 +162,7 @@ while appRunning:
         print("Sensing Stopped!")
         mainMenu()
     elif userInput == "3":
-        print("Checking Sensors...It's Fine...")
+        print("This feature is not yet available")
         mainMenu()
     elif userInput == "4":
         print("Silahkan masukkan email :")
