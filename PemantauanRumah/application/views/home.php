@@ -27,6 +27,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Temperatur Udara</h5>
+                            <h7 class="text text-info"><span id="temperature_loc"></span></h7>
                             <hr>
                             <span id="temperature" class="sensing-value"><strong>N/A</strong></span> °C
                             <br>
@@ -40,6 +41,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kelembaban Udara</h5>
+                            <h7 class="text text-info"><span id="humidity_loc"></span></h7>
                             <hr>
                             <span id="humidity" class="sensing-value"><strong>N/A</strong></span> RH
                             <br>
@@ -53,6 +55,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">pH Air</h5>
+                            <h7 class="text text-info"><span id="ph_loc"></span></h7>
                             <hr>
                             <span id="ph" class="sensing-value"><strong>N/A</strong></span>
                             <br>
@@ -68,6 +71,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas LPG</h5>
+                            <h7 class="text text-info"><span id="lpg_loc"></span></h7>
                             <hr>
                             <span id="lpg" class="sensing-value"><strong>N/A</strong></span> PPM
                             <br>
@@ -81,6 +85,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas Karbon</h5>
+                            <h7 class="text text-info"><span id="carbon_loc"></span></h7>
                             <hr>
                             <span id="carbon" class="sensing-value"><strong>N/A</strong></span> PPM
                             <br>
@@ -94,6 +99,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Asap</h5>
+                            <h7 class="text text-info"><span id="smoke_loc"></span></h7>
                             <hr>
                             <span id="smoke" class="sensing-value"><strong>N/A</strong></span> PPM
                             <br>
@@ -211,21 +217,27 @@
                     
                     // replace all values and refresh the display
                     document.getElementById("temperature").innerHTML = data.newTemperature;
+                    document.getElementById("temperature_loc").innerHTML = data.newTemperatureLoc;
                     document.getElementById("monitoring_time_temperature").innerHTML = data.timestampTemperature;
                     
                     document.getElementById("humidity").innerHTML = data.newHumidity;
+                    document.getElementById("humidity_loc").innerHTML = data.newHumidityLoc;
                     document.getElementById("monitoring_time_humidity").innerHTML = data.timestampHumidity;
                     
                     document.getElementById("ph").innerHTML = data.newPh;
+                    document.getElementById("ph_loc").innerHTML = data.newPhLoc;
                     document.getElementById("monitoring_time_ph").innerHTML = data.timestampPh;
                     
                     document.getElementById("lpg").innerHTML = data.newLPG;
+                    document.getElementById("lpg_loc").innerHTML = data.newLPGLoc;
                     document.getElementById("monitoring_time_lpg").innerHTML = data.timestampLPG;
                     
                     document.getElementById("carbon").innerHTML = data.newCO;
+                    document.getElementById("carbon_loc").innerHTML = data.newCOLoc;
                     document.getElementById("monitoring_time_carbon").innerHTML = data.timestampCO;
                     
                     document.getElementById("smoke").innerHTML = data.newSmoke;
+                    document.getElementById("smoke_loc").innerHTML = data.newSmokeLoc;
                     document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
                 }
             });

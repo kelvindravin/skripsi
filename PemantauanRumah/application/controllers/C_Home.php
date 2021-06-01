@@ -87,21 +87,27 @@ class C_Home extends CI_Controller
 
         public function getRealtimeUpdate(){
         $result['newTemperature'] = $this->Pemantauan->getTemperature()[0]->pengukuran;
+        $result['newTemperatureLoc'] = $this->Pemantauan->getTemperature()[0]->lokasi;
         $result['timestampTemperature'] = $this->Pemantauan->getTemperature()[0]->timestamp;
         
         $result['newHumidity'] = $this->Pemantauan->getHumidity()[0]->pengukuran;
+        $result['newHumidityLoc'] = $this->Pemantauan->getHumidity()[0]->lokasi;
         $result['timestampHumidity'] = $this->Pemantauan->getHumidity()[0]->timestamp;
         
         $result['newPh'] = $this->Pemantauan->getPH()[0]->pengukuran;
+        $result['newPhLoc'] = $this->Pemantauan->getPH()[0]->lokasi;
         $result['timestampPh'] = $this->Pemantauan->getPH()[0]->timestamp;
         
         $result['newLPG'] = $this->Pemantauan->getLPG()[0]->pengukuran;
+        $result['newLPGLoc'] = $this->Pemantauan->getLPG()[0]->lokasi;
         $result['timestampLPG'] = $this->Pemantauan->getLPG()[0]->timestamp;
         
         $result['newCO'] = $this->Pemantauan->getCarbon()[0]->pengukuran;
+        $result['newCOLoc'] = $this->Pemantauan->getCarbon()[0]->lokasi;
         $result['timestampCO'] = $this->Pemantauan->getCarbon()[0]->timestamp;
         
         $result['newSmoke'] = $this->Pemantauan->getSmoke()[0]->pengukuran;
+        $result['newSmokeLoc'] = $this->Pemantauan->getSmoke()[0]->lokasi;
         $result['timestampSmoke'] = $this->Pemantauan->getSmoke()[0]->timestamp;
         
         echo json_encode($result);

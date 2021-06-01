@@ -10,6 +10,14 @@ import os
 appRunning = True
 sensingStatus = False
 
+# Admin Defined Sensor Location //Change the value according to the placement of the sensor
+lokasi_temperature = "dapur"
+lokasi_humidity = "dapur"
+lokasi_lpg = "dapur"
+lokasi_smoke = "dapur"
+lokasi_co = "dapur"
+lokasi_ph = "penyimpanan air"
+lokasi_turbidity = "penyimpanan air"
 
 #serial details
 serial = serial.Serial(
@@ -66,11 +74,11 @@ def updateUserPassword(email,password):
 # ====user account====
 
 # ====insert data to database====
-def insertDataToDB(tipeSensor,data,time):
+def insertDataToDB(tipeSensor,data,time, lokasi):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO sensorReading (timestamp, pengukuran, sensorPengukur) VALUES (%s,%s,%s)"
-    val = (time,data,tipeSensor)
+    query = "INSERT INTO sensorReading (timestamp, pengukuran, sensorPengukur, lokasi) VALUES (%s,%s,%s,%s)"
+    val = (time,data,tipeSensor,lokasi)
 
     cursor.execute(query, val)
 
@@ -96,8 +104,9 @@ class sensorSense():
         sensingThread.start()
 
     def run(self):
-        while sensingStatus:
+        while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
+            #data = "H20 T20 L20 C20 A20 P20"
             if data != "":
                 parameters = data.split()
                 
@@ -105,22 +114,25 @@ class sensorSense():
                 for value in parameters:
                     if value[0] == "H":
                         nilai = value[1:]
-                        insertDataToDB("humidity",nilai,datetime.now())
+                        insertDataToDB("humidity",nilai,datetime.now(),lokasi_humidity)
                     elif value[0] == "T":
                         nilai = value[1:]
-                        insertDataToDB("temperature",nilai,datetime.now())
+                        insertDataToDB("temperature",nilai,datetime.now(),lokasi_temperature)
                     elif value[0] == "L":
                         nilai = value[1:]
-                        insertDataToDB("lpg",nilai,datetime.now())
+                        insertDataToDB("lpg",nilai,datetime.now(),lokasi_lpg)
                     elif value[0] == "C":
                         nilai = value[1:]
-                        insertDataToDB("carbon",nilai,datetime.now())
+                        insertDataToDB("carbon",nilai,datetime.now(),lokasi_co)
                     elif value[0] == "A":
                         nilai = value[1:]
-                        insertDataToDB("smoke",nilai,datetime.now())
+                        insertDataToDB("smoke",nilai,datetime.now(),lokasi_smoke)
                     elif value[0] == "P":
                         nilai = value[1:]
-                        insertDataToDB("ph",nilai,datetime.now())
+                        insertDataToDB("ph",nilai,datetime.now(),lokasi_ph)
+                    elif value[0] == "K":
+                        nilai = value[1:]
+                        insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
                             
                     # print("Data inserted into database! Inserted : ")
                     # print(parameters)
@@ -137,11 +149,10 @@ def mainMenu():
     print("Menu :")
     print("1. Mulai Pencatatan Sensing")
     print("2. Berhenti Pencatatan Sensing")
-    print("3. Cek Status Seluruh Sensor")
-    print("4. Daftar Account User Website Pemantauan")
-    print("5. Update User Password")
-    print("6. Update Notifikasi User")
-    print("7. Keluar")
+    print("3. Daftar Account User Website Pemantauan")
+    print("4. Update User Password")
+    print("5. Update Notifikasi User")
+    print("6. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
 # ==== End of Main Menu Component ====
@@ -152,7 +163,7 @@ userInput = input()
 
 while appRunning:
     # enabling sensing
-    if userInput == "1" and sensingStatus == False:
+    if userInput == "1" and sensingStatus == False:    
         sensingStatus = True
         sensorSense()
         print("Sensing Started!")
@@ -162,30 +173,27 @@ while appRunning:
         print("Sensing Stopped!")
         mainMenu()
     elif userInput == "3":
-        print("This feature is not yet available")
-        mainMenu()
-    elif userInput == "4":
         print("Silahkan masukkan email :")
         email = input()
         print("Silahkan masukkan password :")
         password = input()
         insertUserToDB(email,password)
         mainMenu()
-    elif userInput == "5":
+    elif userInput == "4":
         print("Silahkan masukkan email :")
         email = input()
         print("Silahkan masukkan password baru :")
         password = input()
         updateUserPassword(email,password)
         mainMenu()
-    elif userInput == "6":
+    elif userInput == "5":
         print("Silahkan masukkan email :")
         email = input()
         print("Apakah anda ingin menyalakan/mematikan notifikasi? (masukkan 0 = mati ATAU 1 = nyala) :")
         notifikasi = input()
         updateUserNotifikasi(email,notifikasi)
         mainMenu()
-    elif userInput == "7":
+    elif userInput == "6":
         sensingStatus = False
         appRunning = False
         print("Sensing dan Aplikasi dimatikan..")
