@@ -9,10 +9,10 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
-        <h1 class="text-center mt-5">
+        <h1 class="text-center mt-1">
             Status Pemantauan Rumah
         </h1>
-        <div class="text-center mb-5">
+        <div class="text-center mb-2">
             <h5>
                 Status Sensor :
             </h5>
@@ -21,9 +21,9 @@
     </header>
 
     <content>
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-sm-4">
+        <div class="container-fluid mb-4">
+            <div class="row text-center d-flex align-items-center justify-content-center">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Temperatur Udara</h5>
@@ -37,7 +37,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kelembaban Udara</h5>
@@ -51,10 +51,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row text-center">
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas LPG</h5>
@@ -68,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Gas Karbon</h5>
@@ -82,7 +79,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kadar Asap</h5>
@@ -98,8 +95,8 @@
                 </div>
             </div>
 
-            <div class="row text-center mt-4">
-                <div class="col-sm-4">
+            <div class="row text-center d-flex align-items-center justify-content-center mt-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">pH Air</h5>
@@ -113,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Kekeruhan Air</h5>
@@ -174,26 +171,26 @@
                     // counting violation of detection for parameters
                     if (data.newLPG > 100) {
                         count_lpg++;
-                        document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar gas LPG sudah melebihi batas normal</span>";
+                        document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan LPG melebihi batas</span>";
                     } else {
                         count_lpg = 0;
-                        document.getElementById("lpg_warning").innerHTML = "";
+                        document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan LPG tidak terdeteksi</span>";
                     }
 
                     if (data.newSmoke >= 100) {
                         count_smoke++;
-                        document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar asap sudah melebihi batas normal</span>";
+                        document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan asap melebihi batas</span>";
                     } else {
                         count_smoke = 0;
-                        document.getElementById("smoke_warning").innerHTML = "";
+                        document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan asap tidak terdeteksi</span>";
                     }
 
                     if (data.newCO >= 25) {
                         count_carbon++;
-                        document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-danger\">Kadar gas karbon sudah melebihi batas normal</span>";
+                        document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan CO melebihi batas</span>";
                     } else {
                         count_carbon = 0;
-                        document.getElementById("carbon_warning").innerHTML = "";
+                        document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan CO tidak terdeteksi</span>";
                     }
 
                     if (data.newTemperature > 25) {
@@ -203,9 +200,9 @@
                     }
 
                     if (data.newHumidity > 70) {
-                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan diatas angka maksimum</span>";
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan terlalu tinggi</span>";
                     } else if (data.newHumidity < 20) {
-                        ocument.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan dibawah angka minimum</span>";
+                        ocument.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan terlalu rendah</span>";
                     } else {
                         document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-success\">Humiditas ruangan normal</span>";
                     }

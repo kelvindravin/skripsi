@@ -17,9 +17,24 @@ if os.path.isfile('sensor_location.txt'):
     file = open("sensor_location.txt", "r")
     sensor_location = file.read().split(sep=",")
 else:
+    print("File Tidak Ditemukan! Akan membuat file baru, silahkan rubah lokasi dari sensor!")
+    time.sleep(1)
+    
+    print("Silahkan Masukkan lokasi dari Node Sensor 1 (temperatur,humiditas,LPG,asap,CO) : ")
+    newLocSensor1 = input()
+    print("Silahkan Masukkan lokasi dari Node Sensor 2 (pH air, turbiditas air) : ")
+    newLocSensor2 = input()
+    
     file = open("sensor_location.txt", "w")
-    file.write("Not Defined,Not Defined")
+    file.write(newLocSensor1 + "," + newLocSensor2)
     file.close()
+    
+    print("Lokasi sensor disimpan dengan nama text file sensor_location.txt")
+    
+    file = open("sensor_location.txt", "r")
+    sensor_location = file.read().split(sep=",")
+    
+    time.sleep(1)
 
 lokasi_temperature = sensor_location[0]
 lokasi_humidity = sensor_location[0]
@@ -116,7 +131,8 @@ class sensorSense():
     def run(self):
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-            #data = "H70 T25 L0 C0 A0 P7 K0"
+            #data = "H90 T30 L200 C200 A200 P14 K10"
+            #data = "H60 T25 L0 C0 A0 P7 K0"
             if data != "":
                 parameters = data.split()
                 
@@ -204,7 +220,7 @@ while appRunning:
     elif userInput == "6":
         print("Silahkan Masukkan lokasi dari Node Sensor 1 (temperatur,humiditas,LPG,asap,CO) : ")
         newLocSensor1 = input()
-        print("Silahkan Masukkan lokasi dari Node Sensor 2 (temperatur,humiditas,LPG,asap,CO) : ")
+        print("Silahkan Masukkan lokasi dari Node Sensor 2 (pH air, turbiditas air) : ")
         newLocSensor2 = input()
         file = open("sensor_location.txt", "w")
         file.write(newLocSensor1 + "," + newLocSensor2)
