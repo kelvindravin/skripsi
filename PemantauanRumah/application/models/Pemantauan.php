@@ -65,6 +65,14 @@ class Pemantauan extends CI_Model
 			->get('sensorReading');
 		return $query->result();
 	}
+
+	public function getTurbidity(){
+		$query = $this->db
+			->where('sensorPengukur','turbidity')
+			->order_by('timestamp','desc')
+			->get('sensorReading');
+		return $query->result();
+	}
 	
 	public function getSearchData($start,$end,$parameters){
 		$parameterFilter = "(";

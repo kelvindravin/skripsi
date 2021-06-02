@@ -38,6 +38,7 @@
                             <input type="checkbox" name="parameter[]" value="temperature"> Temperatur <br>
                             <input type="checkbox" name="parameter[]" value="humidity"> Kelembaban <br>
                             <input type="checkbox" name="parameter[]" value="ph"> pH Air <br>
+                            <input type="checkbox" name="parameter[]" value="turbidity"> Kekeruhan Air <br>
                         </div>
                         <div class="col-sm-6">
                             <input type="checkbox" name="parameter[]" value="lpg"> Gas LPG <br>

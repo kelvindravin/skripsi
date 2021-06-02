@@ -39,6 +39,7 @@ class C_Home extends CI_Controller
     {
         //list of data
         $this->data['ph'] = $this->Pemantauan->getPH();
+        $this->data['ph'] = $this->Pemantauan->getTurbidity();
         $this->data['humidity'] = $this->Pemantauan->getHumidity();
         $this->data['temperature'] = $this->Pemantauan->getTemperature();
         $this->data['lpg'] = $this->Pemantauan->getLPG();
@@ -66,7 +67,7 @@ class C_Home extends CI_Controller
         $searchInput = $this->input->post();
         
         if(empty($searchInput['parameter'])){
-                $searchInput['parameter'] = array('temperature','humidity','ph','lpg','carbon','smoke');
+                $searchInput['parameter'] = array('temperature','humidity','ph','lpg','carbon','smoke','turbidity');
         }
         
         $this->data['dataHistory'] = $this->Pemantauan->getSearchData($searchInput['tanggalMulai'], $searchInput['tanggalSelesai'], $searchInput['parameter']);
@@ -97,6 +98,10 @@ class C_Home extends CI_Controller
         $result['newPh'] = $this->Pemantauan->getPH()[0]->pengukuran;
         $result['newPhLoc'] = $this->Pemantauan->getPH()[0]->lokasi;
         $result['timestampPh'] = $this->Pemantauan->getPH()[0]->timestamp;
+
+        $result['newTurbidity'] = $this->Pemantauan->getTurbidity()[0]->pengukuran;
+        $result['newTurbidityLoc'] = $this->Pemantauan->getTurbidity()[0]->lokasi;
+        $result['timestampTurbidity'] = $this->Pemantauan->getTurbidity()[0]->timestamp;
         
         $result['newLPG'] = $this->Pemantauan->getLPG()[0]->pengukuran;
         $result['newLPGLoc'] = $this->Pemantauan->getLPG()[0]->lokasi;

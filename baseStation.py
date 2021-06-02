@@ -10,14 +10,24 @@ import os
 appRunning = True
 sensingStatus = False
 
-# Admin Defined Sensor Location //Change the value according to the placement of the sensor
-lokasi_temperature = "dapur"
-lokasi_humidity = "dapur"
-lokasi_lpg = "dapur"
-lokasi_smoke = "dapur"
-lokasi_co = "dapur"
-lokasi_ph = "penyimpanan air"
-lokasi_turbidity = "penyimpanan air"
+# Admin Defined Sensor Location, can be editable in sensor_location.txt file
+
+# Check if sensor_location.txt file is exist, if not write default value of not set
+if os.path.isfile('sensor_location.txt'):
+    file = open("sensor_location.txt", "r")
+    sensor_location = file.read().split(sep=",")
+else:
+    file = open("sensor_location.txt", "w")
+    file.write("Not Defined,Not Defined")
+    file.close()
+
+lokasi_temperature = sensor_location[0]
+lokasi_humidity = sensor_location[0]
+lokasi_lpg = sensor_location[0]
+lokasi_smoke = sensor_location[0]
+lokasi_co = sensor_location[0]
+lokasi_ph = sensor_location[1]
+lokasi_turbidity = sensor_location[1]
 
 #serial details
 serial = serial.Serial(
@@ -106,7 +116,7 @@ class sensorSense():
     def run(self):
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-            #data = "H20 T20 L20 C20 A20 P20"
+            #data = "H70 T25 L0 C0 A0 P7 K0"
             if data != "":
                 parameters = data.split()
                 
@@ -133,9 +143,6 @@ class sensorSense():
                     elif value[0] == "K":
                         nilai = value[1:]
                         insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
-                            
-                    # print("Data inserted into database! Inserted : ")
-                    # print(parameters)
 
             time.sleep(self.interval)
 
@@ -152,7 +159,8 @@ def mainMenu():
     print("3. Daftar Account User Website Pemantauan")
     print("4. Update User Password")
     print("5. Update Notifikasi User")
-    print("6. Keluar")
+    print("6. Update Lokasi Sensor")
+    print("7. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
 # ==== End of Main Menu Component ====
@@ -194,6 +202,16 @@ while appRunning:
         updateUserNotifikasi(email,notifikasi)
         mainMenu()
     elif userInput == "6":
+        print("Silahkan Masukkan lokasi dari Node Sensor 1 (temperatur,humiditas,LPG,asap,CO) : ")
+        newLocSensor1 = input()
+        print("Silahkan Masukkan lokasi dari Node Sensor 2 (temperatur,humiditas,LPG,asap,CO) : ")
+        newLocSensor2 = input()
+        file = open("sensor_location.txt", "w")
+        file.write(newLocSensor1 + "," + newLocSensor2)
+        file.close()
+        print("Sukses mengupdate lokasi sensor!")
+        mainMenu()
+    elif userInput == "7":
         sensingStatus = False
         appRunning = False
         print("Sensing dan Aplikasi dimatikan..")
@@ -206,15 +224,3 @@ while appRunning:
     userInput = input()
     
 # End of Starting Application
-
-# ====select data from database====
-# 
-# cursor = mydb.cursor()
-# cursor.execute("SELECT * FROM sensorReading")
-# result = cursor.fetchall()
-# 
-# for x in result:
-#     print(x)
-
-
-# ====end of select data====
