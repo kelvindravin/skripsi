@@ -9,7 +9,7 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
-        <h1 class="text-center mt-5 mb-5">
+        <h1 class="text-center mt-1 mb-1">
             History Pemantauan Rumah
         </h1>
     </header>
@@ -40,7 +40,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-center">
+        <div class="text-center mb-4">
 			<a href="<?php echo base_url('history'); ?>" class="btn btn-danger">Kembali</a>
         </div>
     </content>

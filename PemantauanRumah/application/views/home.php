@@ -194,17 +194,17 @@
                     }
 
                     if (data.newTemperature > 25) {
-                        document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-warning\">Suhu ruangan diatas suhu normal ruangan</span>";
+                        document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-warning\">Suhu diatas suhu normal</span>";
                     } else {
                         document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-success\">Suhu ruangan normal</span>";
                     }
 
                     if (data.newHumidity > 70) {
-                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan terlalu tinggi</span>";
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Kelembaban terlalu tinggi</span>";
                     } else if (data.newHumidity < 20) {
-                        ocument.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Humiditas ruangan terlalu rendah</span>";
+                        ocument.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">Kelembaban terlalu rendah</span>";
                     } else {
-                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-success\">Humiditas ruangan normal</span>";
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-success\">Kelembaban normal</span>";
                     }
 
                     if (data.newPh < 7) {
