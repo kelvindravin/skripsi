@@ -13,5 +13,3 @@ $route['home'] = 'C_Home/loadHome';
 
 $route['history'] = 'C_Home/loadHistorySearch';
 $route['filterMonitoring'] = 'C_Home/filterSearch';
-
-$route['warning'] = 'C_Email/sendWarning';

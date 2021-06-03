@@ -133,32 +133,6 @@
 
 <!-- Realtime Update Script -->
 <script>
-    var count_lpg = 0;
-    var count_smoke = 0;
-    var count_carbon = 0;
-
-    var last_lpg = 0;
-    var last_smoke = 0;
-    var last_carbon = 0;
-
-    function warningEmail(co, smoke, lpg) {
-        // sending warning email via SMTP
-        //console.log("sending to email!");
-        $.ajax({
-            url: "<?= site_url('warning') ?>",
-            method: "POST",
-            data: {
-                co: last_carbon,
-                smoke: last_smoke,
-                lpg: last_lpg
-            }
-        });
-
-        count_lpg = 0;
-        count_smoke = 0;
-        count_carbon = 0;
-    }
-
     $(document).ready(function() {
         setInterval(function() {
             // realtime update from server
@@ -170,26 +144,20 @@
                 success: function(data) {
                     // counting violation of detection for parameters
                     if (data.newLPG > 100) {
-                        count_lpg++;
                         document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan LPG melebihi batas</span>";
                     } else {
-                        count_lpg = 0;
                         document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan LPG tidak terdeteksi</span>";
                     }
 
                     if (data.newSmoke >= 100) {
-                        count_smoke++;
                         document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan asap melebihi batas</span>";
                     } else {
-                        count_smoke = 0;
                         document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan asap tidak terdeteksi</span>";
                     }
 
                     if (data.newCO >= 25) {
-                        count_carbon++;
                         document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan CO melebihi batas</span>";
                     } else {
-                        count_carbon = 0;
                         document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-success\">Kandungan CO tidak terdeteksi</span>";
                     }
 
@@ -219,20 +187,6 @@
                         document.getElementById("turbidity_warning").innerHTML = "<span class=\"badge badge-warning\">Air terpantau keruh</span>";
                     } else {
                         document.getElementById("turbidity_warning").innerHTML = "<span class=\"badge badge-success\">Air terpantau jernih</span>";
-                    }
-
-                    //console.log(count_lpg);
-                    //console.log(count_smoke);
-                    //console.log(count_carbon);
-
-                    // if sensor keep detects the same warning every 5 minutes (sends email every 5 min)
-                    // sense every 5 seconds, so 60 sensing takes approx 60 x 5 sec = 300 sec
-                    if (count_lpg >= 60 || count_smoke >= 60 || count_carbon >= 60) {
-                        last_lpg = data.newLPG;
-                        last_smoke = data.newSmoke;
-                        last_carbon = data.newCO;
-
-                        warningEmail(last_carbon, last_smoke, last_lpg);
                     }
 
                     // replace all values and refresh the display
