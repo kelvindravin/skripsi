@@ -115,6 +115,8 @@ class C_Home extends CI_Controller
         $result['newSmokeLoc'] = $this->Pemantauan->getSmoke()[0]->lokasi;
         $result['timestampSmoke'] = $this->Pemantauan->getSmoke()[0]->timestamp;
         
+        $result['updatedTimestamp'] = $this->Pemantauan->getSensingStatus()[0]->timestamp;
+        
         echo json_encode($result);
 	}
         

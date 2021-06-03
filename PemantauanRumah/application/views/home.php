@@ -189,34 +189,97 @@
                         document.getElementById("turbidity_warning").innerHTML = "<span class=\"badge badge-success\">Air terpantau jernih</span>";
                     }
 
-                    // replace all values and refresh the display
-                    document.getElementById("temperature").innerHTML = data.newTemperature;
-                    document.getElementById("temperature_loc").innerHTML = data.newTemperatureLoc;
-                    document.getElementById("monitoring_time_temperature").innerHTML = data.timestampTemperature;
+                    //current time for sensor activity check
+                    var currentTime = Date.now();
+                    
+                    // replace all values and refresh the display, and check if the diff between current time and sensing time 
+                    // divided by 1000 (to make it in seconds)
+                    // is more than 5 minutes (if > 5 minutes, then the sensor will be marked as N/A)
+                    
+                    var checkTemperatureTime = (new Date(data.timestampTemperature) / 1000 ) + "000";
+                    if((currentTime - checkTemperatureTime) / 1000 > 300){
+                        document.getElementById("temperature").innerHTML = "N/A";
+                        document.getElementById("temperature_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_temperature").innerHTML = data.timestampTemperature;
+                        document.getElementById("temperature_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("temperature").innerHTML = data.newTemperature;
+                        document.getElementById("temperature_loc").innerHTML = data.newTemperatureLoc;
+                        document.getElementById("monitoring_time_temperature").innerHTML = data.timestampTemperature;
+                    }
 
-                    document.getElementById("humidity").innerHTML = data.newHumidity;
-                    document.getElementById("humidity_loc").innerHTML = data.newHumidityLoc;
-                    document.getElementById("monitoring_time_humidity").innerHTML = data.timestampHumidity;
+                    var checkHumidityTime = (new Date(data.timestampHumidity) / 1000 ) + "000";
+                    if((currentTime - checkHumidityTime) / 1000  > 300){
+                        document.getElementById("humidity").innerHTML = "N/A";
+                        document.getElementById("humidity_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_humidity").innerHTML = data.timestampHumidity;
+                        document.getElementById("humidity_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("humidity").innerHTML = data.newHumidity;
+                        document.getElementById("humidity_loc").innerHTML = data.newHumidityLoc;
+                        document.getElementById("monitoring_time_humidity").innerHTML = data.timestampHumidity;
+                    }
+                    
+                    var checkpHTime = (new Date(data.timestampPh) / 1000 ) + "000";
+                    if((currentTime - checkpHTime) / 1000  > 300){
+                        document.getElementById("ph").innerHTML = "N/A";
+                        document.getElementById("ph_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_ph").innerHTML = data.timestampPh;
+                        document.getElementById("ph_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("ph").innerHTML = data.newPh;
+                        document.getElementById("ph_loc").innerHTML = data.newPhLoc;
+                        document.getElementById("monitoring_time_ph").innerHTML = data.timestampPh;
 
-                    document.getElementById("ph").innerHTML = data.newPh;
-                    document.getElementById("ph_loc").innerHTML = data.newPhLoc;
-                    document.getElementById("monitoring_time_ph").innerHTML = data.timestampPh;
+                    }
 
-                    document.getElementById("turbidity").innerHTML = data.newTurbidity;
-                    document.getElementById("turbidity_loc").innerHTML = data.newTurbidityLoc;
-                    document.getElementById("monitoring_time_turbidity").innerHTML = data.timestampTurbidity;
+                    var checkTurbidityTime = (new Date(data.timestampTurbidity) / 1000 ) + "000";
+                    if((currentTime - checkTurbidityTime) / 1000  > 300){
+                        document.getElementById("turbidity").innerHTML = "N/A";
+                        document.getElementById("turbidity_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_turbidity").innerHTML = data.timestampTurbidity;
+                        document.getElementById("turbidity_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("turbidity").innerHTML = data.newTurbidity;
+                        document.getElementById("turbidity_loc").innerHTML = data.newTurbidityLoc;
+                        document.getElementById("monitoring_time_turbidity").innerHTML = data.timestampTurbidity;
+                    }    
+                        
+                    var checkLPGTime = (new Date(data.timestampLPG) / 1000 ) + "000";
+                    if((currentTime - checkLPGTime) / 1000  > 300){
+                        document.getElementById("lpg").innerHTML = "N/A";
+                        document.getElementById("lpg_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_lpg").innerHTML = data.timestampLPG;
+                        document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("lpg").innerHTML = data.newLPG;
+                        document.getElementById("lpg_loc").innerHTML = data.newLPGLoc;
+                        document.getElementById("monitoring_time_lpg").innerHTML = data.timestampLPG;
+                    }
+                    
+                    var checkCOTime = (new Date(data.timestampCO) / 1000 ) + "000";
+                    if((currentTime - checkLPGTime) / 1000  > 300){
+                        document.getElementById("carbon").innerHTML = "N/A";
+                        document.getElementById("carbon_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_carbon").innerHTML = data.timestampCO;
+                        document.getElementById("carbon_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("carbon").innerHTML = data.newCO;
+                        document.getElementById("carbon_loc").innerHTML = data.newCOLoc;
+                        document.getElementById("monitoring_time_carbon").innerHTML = data.timestampCO;
+                    }
 
-                    document.getElementById("lpg").innerHTML = data.newLPG;
-                    document.getElementById("lpg_loc").innerHTML = data.newLPGLoc;
-                    document.getElementById("monitoring_time_lpg").innerHTML = data.timestampLPG;
-
-                    document.getElementById("carbon").innerHTML = data.newCO;
-                    document.getElementById("carbon_loc").innerHTML = data.newCOLoc;
-                    document.getElementById("monitoring_time_carbon").innerHTML = data.timestampCO;
-
-                    document.getElementById("smoke").innerHTML = data.newSmoke;
-                    document.getElementById("smoke_loc").innerHTML = data.newSmokeLoc;
-                    document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
+                    var checkSmokeTime = (new Date(data.timestampSmoke) / 1000 ) + "000";
+                    if((currentTime - checkSmokeTime) / 1000  > 300){
+                        document.getElementById("smoke").innerHTML = "N/A";
+                        document.getElementById("smoke_loc").innerHTML = "N/A";
+                        document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
+                        document.getElementById("smoke_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";
+                    }else{
+                        document.getElementById("smoke").innerHTML = data.newSmoke;
+                        document.getElementById("smoke_loc").innerHTML = data.newSmokeLoc;
+                        document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
+                    }
                 }
             });
 

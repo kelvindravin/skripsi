@@ -197,7 +197,6 @@ class sensorSense():
                             lpg = int(nilai)
                         else :
                             lpg_count = 0
-#                         print(lpg_count)
                         insertDataToDB("lpg",nilai,datetime.now(),lokasi_lpg)
                     elif value[0] == "C":
                         nilai = value[1:]
@@ -206,7 +205,6 @@ class sensorSense():
                             co = int(nilai)
                         else :
                             co_count = 0
-#                         print(co_count)
                         insertDataToDB("carbon",nilai,datetime.now(),lokasi_co)
                     elif value[0] == "A":
                         nilai = value[1:]
@@ -215,7 +213,6 @@ class sensorSense():
                             smoke = int(nilai)
                         else :
                             smoke_count = 0
-#                         print(smoke_count)
                         insertDataToDB("smoke",nilai,datetime.now(),lokasi_smoke)
                     elif value[0] == "P":
                         nilai = value[1:]
@@ -224,8 +221,8 @@ class sensorSense():
                         nilai = value[1:]
                         insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
 
-                    #warning notification for 5 minutes of hazard detection
-                    if smoke_count >= 60 or co_count >= 60 or lpg_count >= 60:
+                    #warning notification for around 120 times (more or less 5 minutes) of hazard detection
+                    if smoke_count >= 120 or co_count >= 120 or lpg_count >= 120:
                         self.sendWarningEmail(lpg,smoke,co)
                         smoke_count = 0
                         co_count = 0

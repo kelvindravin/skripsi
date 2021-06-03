@@ -1,1 +1,1 @@
-ruang keluarga,kolam ikan
+ruang A,ruang B
