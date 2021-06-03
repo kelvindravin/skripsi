@@ -4,6 +4,9 @@ import mysql.connector
 from datetime import datetime
 import threading
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # Global Variables
 
@@ -43,6 +46,10 @@ lokasi_smoke = sensor_location[0]
 lokasi_co = sensor_location[0]
 lokasi_ph = sensor_location[1]
 lokasi_turbidity = sensor_location[1]
+
+batas_lpg = 100
+batas_co = 25
+batas_smoke = 100
 
 #serial details
 serial = serial.Serial(
@@ -127,12 +134,51 @@ class sensorSense():
         sensingThread.daemon = True
 
         sensingThread.start()
+        
+    def sendWarningEmail(self,lpg,smoke,co):
+        sender_address = '2017730022.monitoring@gmail.com'
+        sender_pass = 'homemonitoring'
+        
+        cursor = mydb.cursor(buffered=True)#the buffer will prevent unread result found from fetchone()
+        cursor.execute("""SELECT email FROM user WHERE notifikasi = 1""")
+        result = cursor.fetchone()
+        
+        mail_content = '''Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n'''
+        warning_content_lpg = '''Kadar LPG dalam udara : ''' + str(lpg) + '''PPM (dengan batas sebesar ''' + str(batas_lpg) + '''PPM) \n'''
+        warning_content_co = '''Kadar CO dalam udara : ''' + str(co) + '''PPM (dengan batas sebesar ''' + str(batas_co) + '''PPM) \n'''
+        warning_content_smoke = '''Kadar LPG dalam udara : ''' + str(smoke) + '''PPM (dengan batas sebesar ''' + str(batas_smoke) + '''PPM) \n\n'''
+        mail_end_content = '''Berhati-hatilah, dan harap periksa kondisi tersebut\nHome Monitoring - 2017730022'''
+        content = mail_content + warning_content_lpg + warning_content_co + warning_content_smoke + mail_end_content
+        
+        for receiver_address in result:
+            message = MIMEMultipart()
+            message['From'] = "Home Monitoring System"
+            message['To'] = receiver_address
+            message['Subject'] = 'Home Monitoring Warning Notification'
+            message.attach(MIMEText(content, 'plain'))
+            
+            #SMTP Session
+            session = smtplib.SMTP('smtp.gmail.com', 587)
+            session.starttls()
+            session.login(sender_address, sender_pass)
+            text = message.as_string()
+            session.sendmail(sender_address, receiver_address, text)
+            session.quit()
 
     def run(self):
+        lpg_count = 0
+        co_count = 0
+        smoke_count = 0
+        
+        lpg = 0
+        co = 0
+        smoke = 0
+        
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
             #data = "H90 T30 L200 C200 A200 P14 K10"
             #data = "H60 T25 L0 C0 A0 P7 K0"
+            
             if data != "":
                 parameters = data.split()
                 
@@ -146,12 +192,30 @@ class sensorSense():
                         insertDataToDB("temperature",nilai,datetime.now(),lokasi_temperature)
                     elif value[0] == "L":
                         nilai = value[1:]
+                        if int(nilai) > batas_lpg:
+                            lpg_count += 1
+                            lpg = int(nilai)
+                        else :
+                            lpg_count = 0
+#                         print(lpg_count)
                         insertDataToDB("lpg",nilai,datetime.now(),lokasi_lpg)
                     elif value[0] == "C":
                         nilai = value[1:]
+                        if int(nilai) > batas_co:
+                            co_count += 1
+                            co = int(nilai)
+                        else :
+                            co_count = 0
+#                         print(co_count)
                         insertDataToDB("carbon",nilai,datetime.now(),lokasi_co)
                     elif value[0] == "A":
                         nilai = value[1:]
+                        if int(nilai) > batas_smoke:
+                            smoke_count += 1
+                            smoke = int(nilai)
+                        else :
+                            smoke_count = 0
+#                         print(smoke_count)
                         insertDataToDB("smoke",nilai,datetime.now(),lokasi_smoke)
                     elif value[0] == "P":
                         nilai = value[1:]
@@ -159,6 +223,13 @@ class sensorSense():
                     elif value[0] == "K":
                         nilai = value[1:]
                         insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
+
+                    #warning notification for 5 minutes of hazard detection
+                    if smoke_count >= 60 or co_count >= 60 or lpg_count >= 60:
+                        self.sendWarningEmail(lpg,smoke,co)
+                        smoke_count = 0
+                        co_count = 0
+                        lpg_count = 0
 
             time.sleep(self.interval)
 
