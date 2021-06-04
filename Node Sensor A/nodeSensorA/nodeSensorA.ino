@@ -1,8 +1,8 @@
 // Usually COM 3
 // DHT-11
 #include "DHT.h"
-DHTPIN 2
-DHTTYPE DHT11
+#define DHTPIN 2
+#define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
 

@@ -21,7 +21,7 @@ void setup() {
   
   Serial.print("Calibrating Node B Sensors...\n");  
   Serial.print( "Data transmission ready! Please wait for Node B Calibration...\n" ); 
-  delay(1000);
+  delay(25000);
   Serial.print("Calibration is complete...\n"); 
 }
 
@@ -43,7 +43,7 @@ void loop() {
     
     xbee.print(" P" + String(phAir) + " K" + String(turbiditasAir));
     
-    delay(1000);
+    delay(10000);
 }
 
 float ph (float voltage) {
