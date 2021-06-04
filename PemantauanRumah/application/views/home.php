@@ -6,13 +6,13 @@
     <title>Pemantauan Rumah - Viewing</title>
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 main-body">
 
     <header>
-        <h1 class="text-center mt-1">
+        <h1 class="text-center mt-1 text text-light">
             Status Pemantauan Rumah
         </h1>
-        <div class="text-center mb-2">
+        <div class="text-center mb-2 text text-light">
             <h5>
                 Status Sensor :
             </h5>
@@ -20,7 +20,7 @@
         </div>
     </header>
 
-    <content>
+    <content class="main-body">
         <div class="container-fluid mb-4">
             <div class="row text-center d-flex align-items-center justify-content-center">
                 <div class="col-sm-2">

@@ -26,3 +26,11 @@ a.nav-link.active {
     color: grey;
     font-size: 40px;
 }
+
+.main-body {
+    background-image: url(../images/background.jpg);
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
