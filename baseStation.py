@@ -58,7 +58,7 @@ serial = serial.Serial(
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
-    timeout=2.5
+    timeout=5
 )
 
 #database details
@@ -176,9 +176,10 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-            #data = "H90 T30 L200 C200 A200 P14 K10"
+#             print(data)
+#             data = "H90 T30 L200 C200 A200 P14 K10"
             #data = "H60 T25 L0 C0 A0 P7 K0"
-            
+#             
             if data != "":
                 parameters = data.split()
                 
@@ -192,7 +193,7 @@ class sensorSense():
                         insertDataToDB("temperature",nilai,datetime.now(),lokasi_temperature)
                     elif value[0] == "L":
                         nilai = value[1:]
-                        if int(nilai) > batas_lpg:
+                        if float(nilai) > float(batas_lpg):
                             lpg_count += 1
                             lpg = int(nilai)
                         else :
@@ -200,7 +201,7 @@ class sensorSense():
                         insertDataToDB("lpg",nilai,datetime.now(),lokasi_lpg)
                     elif value[0] == "C":
                         nilai = value[1:]
-                        if int(nilai) > batas_co:
+                        if float(nilai) > float(batas_co):
                             co_count += 1
                             co = int(nilai)
                         else :
@@ -208,7 +209,7 @@ class sensorSense():
                         insertDataToDB("carbon",nilai,datetime.now(),lokasi_co)
                     elif value[0] == "A":
                         nilai = value[1:]
-                        if int(nilai) > batas_smoke:
+                        if float(nilai) > float(batas_smoke):
                             smoke_count += 1
                             smoke = int(nilai)
                         else :
@@ -221,7 +222,7 @@ class sensorSense():
                         nilai = value[1:]
                         insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
 
-                    #warning notification for around 120 times (more or less 5 minutes) of hazard detection
+                    #warning notification for around 120 times (more or less 10 minutes) of hazard detection
                     if smoke_count >= 120 or co_count >= 120 or lpg_count >= 120:
                         self.sendWarningEmail(lpg,smoke,co)
                         smoke_count = 0
