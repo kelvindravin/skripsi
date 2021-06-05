@@ -58,7 +58,7 @@ serial = serial.Serial(
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
-    timeout=5
+    timeout=3
 )
 
 #database details
@@ -177,7 +177,7 @@ class sensorSense():
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
 #             print(data)
-#             data = "H90 T30 L200 C200 A200 P14 K10"
+#             data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
             #data = "H60 T25 L0 C0 A0 P7 K0"
 #             
             if data != "":
@@ -222,8 +222,8 @@ class sensorSense():
                         nilai = value[1:]
                         insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
 
-                    #warning notification for around 120 times (more or less 10 minutes) of hazard detection
-                    if smoke_count >= 120 or co_count >= 120 or lpg_count >= 120:
+                    #warning notification for around 30 times (more or less 5 minutes) of hazard detection
+                    if smoke_count >= 30 or co_count >= 30 or lpg_count >= 30:
                         self.sendWarningEmail(lpg,smoke,co)
                         smoke_count = 0
                         co_count = 0
