@@ -14,7 +14,7 @@ DHT dht(DHTPIN, DHTTYPE);
 #define RO_CLEAN_AIR_FACTOR (9.83)
 #define CALIBARAION_SAMPLE_TIMES (50)
 #define CALIBRATION_SAMPLE_INTERVAL (500)
-#define READ_SAMPLE_INTERVAL (50)
+#define READ_SAMPLE_INTERVAL (0)
 #define READ_SAMPLE_TIMES (5)
 #define GAS_LPG (0)
 #define GAS_CO (1)
@@ -75,7 +75,7 @@ void loop() {
   String hasil = " H" + String(humiditas) + " T" + String(temperatur) + " L" + String(kadarLPG) + " C" + String(kadarCO) + " A" + String(kadarAsap);
   Serial.println(hasil);
   xbee.print(hasil);
-  delay(10000);
+  delay(6000);
 }
 
 //Methods for MQ-2

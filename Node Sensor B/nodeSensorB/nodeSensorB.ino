@@ -43,7 +43,7 @@ void loop() {
     
     xbee.print(" P" + String(phAir) + " K" + String(turbiditasAir));
     
-    delay(10000);
+    delay(6000);
 }
 
 float ph (float voltage) {
