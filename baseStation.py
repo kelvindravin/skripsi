@@ -102,14 +102,14 @@ def updateUserPassword(email,password):
 
     mydb.commit()
     print("Account Password Updated!")
-	
-def getAllEmail():
-	cursor = mydb.cursor(buffered=True)
 
-    cursor.execute("""SELECT * FROM user""")
+def getAllEmail():
+    cursor = mydb.cursor(buffered=True)
+
+    cursor.execute("""SELECT email,notifikasi FROM user""")
     result = cursor.fetchall()
-	
-	return result
+    
+    return result
     
 # ====user account====
 
@@ -184,10 +184,10 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-			#print(data)
-			#data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
+            #print(data)
+            #data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
             #data = "H60 T25 L0 C0 A0 P7 K0" 
-			
+
             if data != "":
                 parameters = data.split()
                 
@@ -281,19 +281,22 @@ while appRunning:
         insertUserToDB(email,password)
         mainMenu()
     elif userInput == "4":
-        print("Silahkan masukkan email :")
+        data = getAllEmail()
+        print("List email yang sudah terdaftar :\n")
+        for x in data:
+            print(x[0])
+        print("\nSilahkan masukkan email yang akan diubah passwordnya:")
         email = input()
         print("Silahkan masukkan password baru :")
         password = input()
         updateUserPassword(email,password)
         mainMenu()
     elif userInput == "5":
-		data = getAllEmail()
-		
-		for x in data:
-			print(x)
-		
-        print("Silahkan masukkan email :")
+        data = getAllEmail()
+        print("List email dan status notifikasi yang sudah terdaftar :")
+        for x in data:
+            print(x)
+        print("Silahkan masukkan email yang akan diubah :")
         email = input()
         print("Apakah anda ingin menyalakan/mematikan notifikasi? (masukkan 0 = mati ATAU 1 = nyala) :")
         notifikasi = input()
