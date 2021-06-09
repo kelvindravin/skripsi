@@ -102,6 +102,14 @@ def updateUserPassword(email,password):
 
     mydb.commit()
     print("Account Password Updated!")
+	
+def getAllEmail():
+	cursor = mydb.cursor(buffered=True)
+
+    cursor.execute("""SELECT * FROM user""")
+    result = cursor.fetchall()
+	
+	return result
     
 # ====user account====
 
@@ -176,10 +184,10 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-#             print(data)
-#             data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
-            #data = "H60 T25 L0 C0 A0 P7 K0"
-#             
+			#print(data)
+			#data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
+            #data = "H60 T25 L0 C0 A0 P7 K0" 
+			
             if data != "":
                 parameters = data.split()
                 
@@ -280,6 +288,11 @@ while appRunning:
         updateUserPassword(email,password)
         mainMenu()
     elif userInput == "5":
+		data = getAllEmail()
+		
+		for x in data:
+			print(x)
+		
         print("Silahkan masukkan email :")
         email = input()
         print("Apakah anda ingin menyalakan/mematikan notifikasi? (masukkan 0 = mati ATAU 1 = nyala) :")
