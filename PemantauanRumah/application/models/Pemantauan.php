@@ -11,10 +11,19 @@ class Pemantauan extends CI_Model
 		$this->db = $this->load->database('default',TRUE);
 	}
 
-	public function getAllReading()
+	public function getLatestReadingTime()
 	{
 		$query = $this->db
-			->get('sensorReading');
+			->select_max('waktu')
+			->get('parameter');
+		return $query->result();	
+	}
+
+	public function getReadingOnATimestamp($latestTime)
+	{
+		$query = $this->db
+			->where('waktu',$latestTime)
+			->join('satuan', 'satuan.idSatuan = parameter.idSatuan')->get('parameter');
 		return $query->result();
 	}
 	

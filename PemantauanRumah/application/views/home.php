@@ -7,123 +7,44 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100 main-body">
-
-    <header>
-        <h1 class="text-center mt-1 text text-light">
-            Status Pemantauan Rumah
-        </h1>
-        <div class="text-center mb-2 text text-light">
-            <h5>
-                Status Sensor :
-            </h5>
-            <span id="statusSensing">N/A</span>
-        </div>
-    </header>
-
     <content class="main-body">
+        <h1 class="text-center mt-1 mb-5 py-2 text text-light bg bg-dark t">
+            Status Pemantauan Kondisi Parameter Rumah
+        </h1>
         <div class="container-fluid mb-4">
-            <div class="row text-center d-flex align-items-center justify-content-center">
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Temperatur Udara</h5>
-                            <h7 class="text text-info"><span id="temperature_loc"></span></h7>
-                            <hr>
-                            <span id="temperature" class="sensing-value"><strong>N/A</strong></span> °C
-                            <br>
-                            <span id="temperature_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_temperature">N/A</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Kelembaban Udara</h5>
-                            <h7 class="text text-info"><span id="humidity_loc"></span></h7>
-                            <hr>
-                            <span id="humidity" class="sensing-value"><strong>N/A</strong></span> RH
-                            <br>
-                            <span id="humidity_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_humidity">N/A</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Kadar Gas LPG</h5>
-                            <h7 class="text text-info"><span id="lpg_loc"></span></h7>
-                            <hr>
-                            <span id="lpg" class="sensing-value"><strong>N/A</strong></span> PPM
-                            <br>
-                            <span id="lpg_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_lpg">N/A</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Kadar Gas Karbon</h5>
-                            <h7 class="text text-info"><span id="carbon_loc"></span></h7>
-                            <hr>
-                            <span id="carbon" class="sensing-value"><strong>N/A</strong></span> PPM
-                            <br>
-                            <span id="carbon_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_carbon">N/A</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Kadar Asap</h5>
-                            <h7 class="text text-info"><span id="smoke_loc"></span></h7>
-                            <hr>
-                            <span id="smoke" class="sensing-value"><strong>N/A</strong></span> PPM
-                            <br>
-                            <span id="smoke_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_smoke">N/A</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row text-center d-flex align-items-center justify-content-center mt-4">
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">pH Air</h5>
-                            <h7 class="text text-info"><span id="ph_loc"></span></h7>
-                            <hr>
-                            <span id="ph" class="sensing-value"><strong>N/A</strong></span>
-                            <br>
-                            <span id="ph_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_ph">N/A</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Kekeruhan Air</h5>
-                            <h7 class="text text-info"><span id="turbidity_loc"></span></h7>
-                            <hr>
-                            <span id="turbidity" class="sensing-value"><strong>N/A</strong></span> NTU
-                            <br>
-                            <span id="turbidity_warning"></span>
-                            <hr>
-                            Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_turbidity">N/A</span>
-                        </div>
-                    </div>
-                </div>
+            <?php 
+                $colCount = 0;
+                foreach ($readings as $value) {
+                    if($colCount == 0){
+                        echo '<div class="row text-center d-flex align-items-center justify-content-center">'; 
+                        $colCount++;
+                    }
+                    
+                    echo '
+                                
+                            <div class="card mx-2 my-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">'. $value->identitasLengkap .'</h5>
+                                    <h7 class="text text-info"><span id="'. $value->identitasLengkap .'_loc"></span></h7>
+                                    <hr>
+                                    <span id="'. $value->identitasLengkap .'" class="sensing-value"><strong>N/A</strong></span> '. $value->satuanLengkap .'
+                                    <br>
+                                    <span id="'. $value->identitasLengkap .'_warning"></span>
+                                    <hr>
+                                    Pemeriksaan Terakhir : <span class="badge badge-info" id="monitoring_time_'. $value->identitasLengkap .'">N/A</span>
+                                </div>
+                            </div>
+                            
+                            ';
+                        
+                    $colCount++;
+                    
+                    if($colCount > 5){
+                        $colCount = 0;
+                        echo '</div>'; 
+                    }
+                }
+            ?>
             </div>
         </div>
     </content>
@@ -143,6 +64,7 @@
                 data: {},
                 success: function(data) {
                     // counting violation of detection for parameters
+                    /*
                     if (data.newLPG > 100) {
                         document.getElementById("lpg_warning").innerHTML = "<span class=\"badge badge-danger\">Kandungan LPG melebihi batas</span>";
                     } else {
@@ -280,6 +202,7 @@
                         document.getElementById("smoke_loc").innerHTML = data.newSmokeLoc;
                         document.getElementById("monitoring_time_smoke").innerHTML = data.timestampSmoke;
                     }
+                    */
                 }
             });
 
@@ -291,6 +214,7 @@
                 data: {},
                 success: function(status) {
                     // finding difference between now and last timestamp
+                    /*
                     var last_timestamp = new Date(status.sensingStatus);
                     var last_timestamp_seconds = (last_timestamp.getTime() / 1000) + "000";
                     var curr_timestamp = Date.now();
@@ -302,6 +226,7 @@
                     } else {
                         document.getElementById("statusSensing").innerHTML = "<span class=\"badge badge-success\">Online</span>"
                     }
+                    */
                 }
             });
         }, 5000);

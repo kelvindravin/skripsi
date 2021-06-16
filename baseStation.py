@@ -65,11 +65,21 @@ def updateUserPassword(email,password):
     mydb.commit()
     print("Account Password Updated!")
     
-def updateSatuanDataToDB(idEdit, identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning):
+def updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatas, warning):
     cursor = mydb.cursor()
 
-    query = "UPDATE satuan SET identitas = %s, identitasLengkap = %s, satuanLengkap = %s, ambangBatas = %s, lokasi = %s, warning = %s WHERE idSatuan = %s"
-    val = (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi , warning, idEdit)
+    query = "UPDATE sensor SET inisialSensor = %s, identitasSensor = %s, satuan = %s, ambangBatas = %s, warning = %s WHERE idSatuan = %s"
+    val = (inisialSensor, identitasSensor, satuan, ambangBatas, warning, idEdit)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
+    
+def updateNodeSensorDataToDB(idEdit ,namaNode, lokasi):
+    cursor = mydb.cursor()
+
+    query = "UPDATE nodeSensor SET namaNode = %s, lokasi = %s WHERE idNode = %s"
+    val = (namaNode, lokasi, idEdit)
 
     cursor.execute(query, val)
 
@@ -83,24 +93,34 @@ def getAllEmail():
     
     return result
     
-# ====user account====
+# ====end of user account====
 
 # ====insert data to database====
-def insertDataToDB(idSatuan, nilaiPengukuran):
+def insertDataToDB(idSensor, nilaiPengukuran):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO parameter (idSatuan, waktu, nilaiPengukuran) VALUES (%s,%s,%s)"
-    val = (idSatuan, datetime.now(), nilaiPengukuran)
+    query = "INSERT INTO pengukuran (idSensor, waktu, nilaiPengukuran) VALUES (%s,%s,%s)"
+    val = (idSensor, datetime.now(), nilaiPengukuran)
 
     cursor.execute(query, val)
 
     mydb.commit()
     
-def insertSatuanDataToDB(identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning):
+def insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatas, warning):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO satuan (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning) VALUES (%s,%s,%s,%s,%s,%s)"
-    val = (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+    query = "INSERT INTO satuan (identitas, identitasLengkap, satuanLengkap, ambangBatas, warning) VALUES (%s,%s,%s,%s,%s)"
+    val = (inisialSensor, identitasSensor, satuan, ambangBatas, warning)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
+    
+def insertNodeSensorDataToDB(namaNode, lokasi):
+    cursor = mydb.cursor()
+
+    query = "INSERT INTO nodeSensor (namaNode, lokasi) VALUES (%s,%s)"
+    val = (namaNode, lokasi)
 
     cursor.execute(query, val)
 
@@ -130,11 +150,11 @@ class sensorSense():
             data = "H0.00 T0.00 L0.00 C0.00 A0.00 P0.00 K0.00"
             #print(data)
             
-            #identitas -> returns array of identitas (ex : [T,H,L])
-            identitas = mydb.cursor(buffered=True)
+            #inisialSensor -> returns array of identitas (ex : [T,H,L])
+            inisialSensor = mydb.cursor(buffered=True)
 
-            identitas.execute("""SELECT identitas FROM satuan""")
-            identitasArray = [item[0] for item in identitas.fetchall()]
+            inisialSensor.execute("""SELECT inisialSensor FROM sensor""")
+            inisialSensorArray = [item[0] for item in inisialSensor.fetchall()]
 
             if data != "":
                 parameters = data.split() #returns -> [T0,H0,L0]
@@ -145,17 +165,17 @@ class sensorSense():
                     parameterInisial = value[0] # ex : H
                     nilaiPengukuran = value[1:] # ex : 70
                     
-                    #getIdSatuan -> getting idSatuan for insertion to db, returns idSatuan
-                    idSatuanCursor = mydb.cursor(buffered=True)
+                    #getIdSensor -> getting idSensor for insertion to db, returns idSensor
+                    idSensorCursor = mydb.cursor(buffered=True)
 
-                    queryIdSatuan = "SELECT idSatuan FROM satuan WHERE identitas = %s"
+                    queryIdSensor = "SELECT idSensor FROM sensor WHERE identitasSensor = %s"
                     value = (parameterInisial,)
-                    idSatuanCursor.execute(queryIdSatuan, value)
+                    idSensorCursor.execute(queryIdSatuan, value)
                     
-                    idSatuan = [item[0] for item in idSatuanCursor.fetchall()][0]
+                    idSensor = [item[0] for item in idSensorCursor.fetchall()][0]
                     
                     #inserting to database
-                    insertDataToDB(idSatuan, nilaiPengukuran)
+                    insertDataToDB(idSensor, nilaiPengukuran)
                     
             time.sleep(self.interval)
 
@@ -227,60 +247,77 @@ while appRunning:
         print("=============================================")
         print("Manage Parameter Sensor")
         print("=============================================")
-        print("Parameter sensor yang tersedia : ")
-        print("(Format : Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
+        print("Sensor-sensor yang tersedia : ")
+        #print("(Format : Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
         
-        listParam = mydb.cursor(buffered=True)
+        listSensor = mydb.cursor(buffered=True)
 
-        listParam.execute("""SELECT identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi  FROM satuan""")
-        hasil = listParam.fetchall()
+        listSensor.execute("""SELECT namaNode ,lokasi, inisialSensor, identitasSensor, satuan, ambangBatas, warning  FROM sensor JOIN nodeSensor ON sensor.idNode = nodeSensor.idNode""")
+        hasil = listSensor.fetchall()
         
         for x in hasil:
             print(x)
         
-        print("1. Buat Parameter Sensor Baru")
-        print("2. Edit Parameter Sensor")
+        print("1. Masukkan Node Sensor Baru")
+        print("2. Masukkan Jenis Sensor Baru")
+        print("3. Edit Node Sensor")
+        print("3. Edit Sensor")
         print("3. Kembali")
         print("=============================================")
         
         choice = input()
         if choice == "1":
-            print("Silahkan masukkan data-data berikut :")
+            print("Silahkan masukkan data-data node sensor baru :")
             
-            print("Inisial dari parameter baru (harus sesuai dengan inisial pesan dari arduino) : ")
-            identitas = input()
-        
-            print("Identitas lengkap berdasarkan inisial dari sensor : ")
-            identitasLengkap = input()
+            print("Nama node sensor : ")
+            namaNode = input()
             
-            print("Satuan standar dari parameter terkait : ")
-            satuanLengkap = input()
-            
-            print("Ambang batas dari parameter terkait : ")
-            ambangBatas = input()
-            
-            print("Lokasi pemasangan dari sensor parameter terkait : ")
+            print("Lokasi penempatan node sensor : ")
             lokasi = input()
             
-            print("Apakah warning yang akan diberikan apabila ambang batas terlampaui / kurang dari (max 256 karakter) : ")
-            warning = input()
-        
-            correction = 'inisial : ' + identitas + '\n' + 'nama parameter : ' + identitasLengkap + '\n' + 'satuan : ' + satuanLengkap + '\n' + 'ambang batas : ' + ambangBatas + '\n'  + 'lokasi : ' + lokasi + '\n'  + 'warning : ' + warning
+            correction = 'Nama Node : ' + namaNode + '\n' + 'Lokasi Node : ' + lokasi
             print(correction)
             print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                insertSatuanDataToDB(identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+                insertNodeSensorDataToDB(namaNode, lokasi)
+            
+            mainmenu()
+            
+        elif choice == "2":
+            print("Silahkan masukkan data-data jenis sensor baru :")
+            
+            print("Inisial dari hasil pengukuran sensor (harus sesuai dengan inisial sensor pada arduino) : ")
+            inisialSensor = input()
+        
+            print("Nama dari hasil pengukuran sensor : ")
+            identitasSensor = input()
+            
+            print("Satuan standar hasil pengukuran dari sensor terkait : ")
+            satuan = input()
+            
+            print("Ambang batas hasil pengukuran dari parameter terkait : ")
+            ambangBatas = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran memenuhi ambang batas dari (max 256 karakter) : ")
+            warning = input()
+        
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas : ' + ambangBatas + '\n' + 'warning : ' + warning
+            print(correction)
+            print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
+            checkCorrection = input()
+            
+            if checkCorrection == "Y":
+                insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatas, warning)
                 
             mainMenu()
-        elif choice == "2":
-            print("Silahkan pilih data yang akan di edit :")
-            print("(Format : id, Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
-
+        elif choice == "3":
+            print("Silahkan pilih data node sensor yang akan di edit :")
+            print("(Format : idNode, Nama Node, Lokasi Node)")
             listEdit= mydb.cursor(buffered=True)
 
-            listEdit.execute("""SELECT * FROM satuan""")
+            listEdit.execute("""SELECT * FROM nodeSensor""")
             preview = listEdit.fetchall()
             
             for x in preview:
@@ -289,33 +326,61 @@ while appRunning:
             print("Silahkan pilih id data yang akan di edit : ")
             idEdit = input()
             
-            print("Inisial dari parameter (harus sesuai dengan inisial pesan dari arduino) : ")
-            identitas = input()
-        
-            print("Identitas lengkap berdasarkan inisial dari sensor : ")
-            identitasLengkap = input()
+            print("Nama node sensor : ")
+            namaNode = input()
             
-            print("Satuan standar dari parameter terkait : ")
-            satuanLengkap = input()
-            
-            print("Ambang batas dari parameter terkait : ")
-            ambangBatas = input()
-            
-            print("Lokasi pemasangan dari sensor parameter terkait : ")
+            print("Lokasi penempatan node sensor : ")
             lokasi = input()
             
-            print("Warning yang akan diberikan apabila ambang batas terlampaui / kurang dari (max 256 karakter) : ")
-            warning = input()
-        
-            correction = 'inisial : ' + identitas + '\n' + 'nama parameter : ' + identitasLengkap + '\n' + 'satuan : ' + satuanLengkap + '\n' + 'ambang batas : ' + ambangBatas + '\n'  + 'lokasi : ' + lokasi + '\n'  + 'warning : ' + warning
+            correction = 'Nama Node : ' + namaNode + '\n' + 'Lokasi Node : ' + lokasi
             print(correction)
-            
-            print("Periksa kembali parameter yang telah diubah, apakah sesuai? (Y/N)")
-            
+            print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                updateSatuanDataToDB(idEdit , identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+                updateNodeSensorDataToDB(idEdit ,namaNode, lokasi)
+            
+            mainmenu()
+            
+        elif choice == "4":
+            print("Silahkan pilih data sensor yang akan di edit :")
+            print("(Format : idSensor, Inisial Sensor , Identitas Sensor , Satuan , Ambang Batas , Warning)")
+
+            listEdit= mydb.cursor(buffered=True)
+
+            listEdit.execute("""SELECT * FROM sensor""")
+            preview = listEdit.fetchall()
+            
+            for x in preview:
+                print(x)
+            
+            print("Silahkan pilih id data yang akan di edit : ")
+            idEdit = input()
+            
+            print("Inisial dari hasil pengukuran sensor (harus sesuai dengan inisial sensor pada arduino) : ")
+            inisialSensor = input()
+        
+            print("Nama dari hasil pengukuran sensor : ")
+            identitasSensor = input()
+            
+            print("Satuan standar hasil pengukuran dari sensor terkait : ")
+            satuan = input()
+            
+            print("Ambang batas hasil pengukuran dari parameter terkait : ")
+            ambangBatas = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran memenuhi ambang batas dari (max 256 karakter) : ")
+            warning = input()
+        
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas : ' + ambangBatas + '\n' + 'warning : ' + warning
+            print(correction)
+            
+            print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
+            checkCorrection = input()
+            
+            if checkCorrection == "Y":
+                updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatas, warning)
+                
             mainMenu()
         else:
             mainMenu()
