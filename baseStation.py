@@ -31,18 +31,7 @@ mydb = mysql.connector.connect(
   database="pemantauanrumah"
 )
 
-# ====user account====
-def insertUserToDB(email,password):
-    cursor = mydb.cursor()
-
-    query = "INSERT INTO user (email,password) VALUES (%s,%s)"
-    val = (email,password)
-
-    cursor.execute(query, val)
-
-    mydb.commit()
-    print("Account Registered!")
-
+# ====update data to database====
 def updateUserNotifikasi(email,notifikasi):
     mycursor = mydb.cursor()
 
@@ -84,18 +73,20 @@ def updateNodeSensorDataToDB(idEdit ,namaNode, lokasi):
     cursor.execute(query, val)
 
     mydb.commit()
-
-def getAllEmail():
-    cursor = mydb.cursor(buffered=True)
-
-    cursor.execute("""SELECT email,notifikasi FROM user""")
-    result = cursor.fetchall()
-    
-    return result
-    
-# ====end of user account====
+# ====end of update data to database====
 
 # ====insert data to database====
+def insertUserToDB(email,password):
+    cursor = mydb.cursor()
+
+    query = "INSERT INTO user (email,password) VALUES (%s,%s)"
+    val = (email,password)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
+    print("Account Registered!")
+
 def insertDataToDB(idSensor, nilaiPengukuran):
     cursor = mydb.cursor()
 
@@ -127,12 +118,21 @@ def insertNodeSensorDataToDB(namaNode, lokasi):
     mydb.commit()
 # ====end of insert data====
 
-# for translating True to Online / False to Offline
+# ====additional method====
 def translateStatusIntoWords(status):
     if status == True:
         return "Online"
     else:
         return "Offline"
+
+def getAllEmail():
+    cursor = mydb.cursor(buffered=True)
+
+    cursor.execute("""SELECT email,notifikasi FROM user""")
+    result = cursor.fetchall()
+    
+    return result
+# ====end of additional method====
 
 # opening thread and start sensing until it's turned off
 class sensorSense():
@@ -143,11 +143,55 @@ class sensorSense():
         sensingThread.daemon = True
 
         sensingThread.start()
+        
+    def sendWarningEmail(self,lpg,smoke,co,batas_lpg,batas_smoke,batas_co):
+        sender_address = '2017730022.monitoring@gmail.com'
+        sender_pass = 'homemonitoring'
+        
+        cursor = mydb.cursor(buffered=True)#the buffer will prevent unread result found from fetchone()
+        cursor.execute("""SELECT email FROM user WHERE notifikasi = 1""")
+        result = cursor.fetchone()
+        
+        mail_content = '''Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n'''
+        warning_content_lpg = '''Kadar LPG dalam udara : ''' + str(lpg) + ''' PPM (dengan batas sebesar ''' + str(batas_lpg) + '''PPM) \n'''
+        warning_content_co = '''Kadar CO dalam udara : ''' + str(co) + ''' PPM (dengan batas sebesar ''' + str(batas_co) + '''PPM) \n'''
+        warning_content_smoke = '''Kadar Asap dalam udara : ''' + str(smoke) + ''' PPM (dengan batas sebesar ''' + str(batas_smoke) + '''PPM) \n\n'''
+        mail_end_content = '''Berhati-hatilah, dan harap periksa kondisi tersebut\nHome Monitoring - 2017730022'''
+        content = mail_content + warning_content_lpg + warning_content_co + warning_content_smoke + mail_end_content
+        
+        for receiver_address in result:
+            message = MIMEMultipart()
+            message['From'] = "Home Monitoring System"
+            message['To'] = receiver_address
+            message['Subject'] = 'Home Monitoring Warning Notification'
+            message.attach(MIMEText(content, 'plain'))
+            
+            #SMTP Session
+            session = smtplib.SMTP('smtp.gmail.com', 587)
+            session.starttls()
+            session.login(sender_address, sender_pass)
+            text = message.as_string()
+            session.sendmail(sender_address, receiver_address, text)
+            session.quit()
 
     def run(self):
+        #violation counter of LPG, CO and Smoke
+        lpg_violation = 0
+        smoke_violation = 0
+        co_violation = 0
+        
+        lpg_violation_value = ""
+        smoke_violation_value = ""
+        co_violation_value = ""
+        
+        ambangBatas = mydb.cursor(buffered=True)
+
+        ambangBatas.execute("""SELECT ambangBatas FROM sensor WHERE inisialSensor = 'L' OR inisialSensor = 'C' OR inisialSensor = 'A'""")
+        ambangBatasArray = [item[0] for item in ambangBatas.fetchall()] #returns in order [0]-> LPG, [1]->Carbon, [2]->Smoke
+        
         while sensingStatus:            
             #data = serial.readline().decode("ascii").strip()
-            data = "H0.00 T0.00 L0.00 C0.00 A0.00 P0.00 K0.00"
+            data = "H0.00 T0.00 L200.00 C200.00 A200.00 P0.00 K0.00"
             #print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
@@ -164,6 +208,25 @@ class sensorSense():
                     
                     parameterInisial = value[0] # ex : H
                     nilaiPengukuran = value[1:] # ex : 70
+                    
+                    #violation checking for email warning
+                    if parameterInisial == "L" and float(nilaiPengukuran) >= ambangBatasArray[0]:
+                        lpg_violation += 1
+                        lpg_violation_value = nilaiPengukuran
+                        
+                    if parameterInisial == "C" and float(nilaiPengukuran) >= ambangBatasArray[1]:
+                        co_violation += 1
+                        co_violation_value = nilaiPengukuran
+                        
+                    if parameterInisial == "A" and float(nilaiPengukuran) >= ambangBatasArray[2]:
+                        smoke_violation += 1
+                        smoke_violation_value = nilaiPengukuran
+                        
+                    if lpg_violation > 5 or co_violation > 5 or smoke_violation > 5:
+                        self.sendWarningEmail(lpg_violation_value,smoke_violation_value,co_violation_value,ambangBatasArray[0],ambangBatasArray[2],ambangBatasArray[1])
+                        lpg_violation = 0
+                        smoke_violation = 0
+                        co_violation = 0
                     
                     #getIdSensor -> getting idSensor for insertion to db, returns idSensor
                     idSensorCursor = mydb.cursor(buffered=True)
@@ -186,7 +249,6 @@ class sensorSense():
                     #inserting to database
                     insertDataToDB(idSensor, nilaiPengukuran)
                     
-            break
             time.sleep(self.interval)
 
 # Starting Application
