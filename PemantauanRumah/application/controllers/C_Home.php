@@ -38,7 +38,7 @@ class C_Home extends CI_Controller
     {
         //list of data
         $this->data['ph'] = $this->Pemantauan->getPH();
-        $this->data['ph'] = $this->Pemantauan->getTurbidity();
+        $this->data['turbidity'] = $this->Pemantauan->getTurbidity();
         $this->data['humidity'] = $this->Pemantauan->getHumidity();
         $this->data['temperature'] = $this->Pemantauan->getTemperature();
         $this->data['lpg'] = $this->Pemantauan->getLPG();
@@ -74,14 +74,6 @@ class C_Home extends CI_Controller
         $this->load->view('header');
         $this->load->view('navbar',$this->nav);
         $this->load->view('historyView',$this->data);
-        $this->load->view('footer');
-    }
-
-    public function loadAbout(){
-        $this->nav['current_nav'] = "about";
-        $this->load->view('header');
-        $this->load->view('navbar',$this->nav);
-        $this->load->view('about');
         $this->load->view('footer');
     }
 

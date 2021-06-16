@@ -13,60 +13,22 @@ from email.mime.text import MIMEText
 appRunning = True
 sensingStatus = False
 
-# Admin Defined Sensor Location, can be editable in sensor_location.txt file
-
-# Check if sensor_location.txt file is exist, if not write default value of not set
-if os.path.isfile('sensor_location.txt'):
-    file = open("sensor_location.txt", "r")
-    sensor_location = file.read().split(sep=",")
-else:
-    print("File Tidak Ditemukan! Akan membuat file baru, silahkan rubah lokasi dari sensor!")
-    time.sleep(1)
-    
-    print("Silahkan Masukkan lokasi dari Node Sensor 1 (temperatur,humiditas,LPG,asap,CO) : ")
-    newLocSensor1 = input()
-    print("Silahkan Masukkan lokasi dari Node Sensor 2 (pH air, turbiditas air) : ")
-    newLocSensor2 = input()
-    
-    file = open("sensor_location.txt", "w")
-    file.write(newLocSensor1 + "," + newLocSensor2)
-    file.close()
-    
-    print("Lokasi sensor disimpan dengan nama text file sensor_location.txt")
-    
-    file = open("sensor_location.txt", "r")
-    sensor_location = file.read().split(sep=",")
-    
-    time.sleep(1)
-
-lokasi_temperature = sensor_location[0]
-lokasi_humidity = sensor_location[0]
-lokasi_lpg = sensor_location[0]
-lokasi_smoke = sensor_location[0]
-lokasi_co = sensor_location[0]
-lokasi_ph = sensor_location[1]
-lokasi_turbidity = sensor_location[1]
-
-batas_lpg = 100
-batas_co = 25
-batas_smoke = 100
-
 #serial details
-serial = serial.Serial(
-    port='/dev/ttyUSB0',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=3
-)
+# serial = serial.Serial(
+#     port='/dev/ttyUSB0',
+#     baudrate=9600,
+#     parity=serial.PARITY_NONE,
+#     stopbits=serial.STOPBITS_ONE,
+#     bytesize=serial.EIGHTBITS,
+#     timeout=3
+# )
 
 #database details
 mydb = mysql.connector.connect(
   host="localhost",
   user="pi",
   password="admin",
-  database="pemantaurumah"
+  database="pemantauanrumah"
 )
 
 # ====user account====
@@ -102,6 +64,16 @@ def updateUserPassword(email,password):
 
     mydb.commit()
     print("Account Password Updated!")
+    
+def updateSatuanDataToDB(idEdit, identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning):
+    cursor = mydb.cursor()
+
+    query = "UPDATE satuan SET identitas = %s, identitasLengkap = %s, satuanLengkap = %s, ambangBatas = %s, lokasi = %s, warning = %s WHERE idSatuan = %s"
+    val = (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi , warning, idEdit)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
 
 def getAllEmail():
     cursor = mydb.cursor(buffered=True)
@@ -114,16 +86,25 @@ def getAllEmail():
 # ====user account====
 
 # ====insert data to database====
-def insertDataToDB(tipeSensor,data,time, lokasi):
+def insertDataToDB(idSatuan, nilaiPengukuran):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO sensorReading (timestamp, pengukuran, sensorPengukur, lokasi) VALUES (%s,%s,%s,%s)"
-    val = (time,data,tipeSensor,lokasi)
+    query = "INSERT INTO parameter (idSatuan, waktu, nilaiPengukuran) VALUES (%s,%s,%s)"
+    val = (idSatuan, datetime.now(), nilaiPengukuran)
 
     cursor.execute(query, val)
 
     mydb.commit()
+    
+def insertSatuanDataToDB(identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning):
+    cursor = mydb.cursor()
 
+    query = "INSERT INTO satuan (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning) VALUES (%s,%s,%s,%s,%s,%s)"
+    val = (identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+
+    cursor.execute(query, val)
+
+    mydb.commit()
 # ====end of insert data====
 
 # for translating True to Online / False to Offline
@@ -142,101 +123,40 @@ class sensorSense():
         sensingThread.daemon = True
 
         sensingThread.start()
-        
-    def sendWarningEmail(self,lpg,smoke,co):
-        sender_address = '2017730022.monitoring@gmail.com'
-        sender_pass = 'homemonitoring'
-        
-        cursor = mydb.cursor(buffered=True)#the buffer will prevent unread result found from fetchone()
-        cursor.execute("""SELECT email FROM user WHERE notifikasi = 1""")
-        result = cursor.fetchone()
-        
-        mail_content = '''Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n'''
-        warning_content_lpg = '''Kadar LPG dalam udara : ''' + str(lpg) + '''PPM (dengan batas sebesar ''' + str(batas_lpg) + '''PPM) \n'''
-        warning_content_co = '''Kadar CO dalam udara : ''' + str(co) + '''PPM (dengan batas sebesar ''' + str(batas_co) + '''PPM) \n'''
-        warning_content_smoke = '''Kadar LPG dalam udara : ''' + str(smoke) + '''PPM (dengan batas sebesar ''' + str(batas_smoke) + '''PPM) \n\n'''
-        mail_end_content = '''Berhati-hatilah, dan harap periksa kondisi tersebut\nHome Monitoring - 2017730022'''
-        content = mail_content + warning_content_lpg + warning_content_co + warning_content_smoke + mail_end_content
-        
-        for receiver_address in result:
-            message = MIMEMultipart()
-            message['From'] = "Home Monitoring System"
-            message['To'] = receiver_address
-            message['Subject'] = 'Home Monitoring Warning Notification'
-            message.attach(MIMEText(content, 'plain'))
-            
-            #SMTP Session
-            session = smtplib.SMTP('smtp.gmail.com', 587)
-            session.starttls()
-            session.login(sender_address, sender_pass)
-            text = message.as_string()
-            session.sendmail(sender_address, receiver_address, text)
-            session.quit()
 
     def run(self):
-        lpg_count = 0
-        co_count = 0
-        smoke_count = 0
-        
-        lpg = 0
-        co = 0
-        smoke = 0
-        
         while sensingStatus:            
-            data = serial.readline().decode("ascii").strip()
-            print(data)
-            #data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
-            #data = "H60 T25 L0 C0 A0 P7 K0" 
+            #data = serial.readline().decode("ascii").strip()
+            data = "H0.00 T0.00 L0.00 C0.00 A0.00 P0.00 K0.00"
+            #print(data)
+            
+            #identitas -> returns array of identitas (ex : [T,H,L])
+            identitas = mydb.cursor(buffered=True)
+
+            identitas.execute("""SELECT identitas FROM satuan""")
+            identitasArray = [item[0] for item in identitas.fetchall()]
 
             if data != "":
-                parameters = data.split()
+                parameters = data.split() #returns -> [T0,H0,L0]
                 
                 #splitting parameter from value and insert to DB
                 for value in parameters:
-                    if value[0] == "H":
-                        nilai = value[1:]
-                        insertDataToDB("humidity",nilai,datetime.now(),lokasi_humidity)
-                    elif value[0] == "T":
-                        nilai = value[1:]
-                        insertDataToDB("temperature",nilai,datetime.now(),lokasi_temperature)
-                    elif value[0] == "L":
-                        nilai = value[1:]
-                        if float(nilai) > float(batas_lpg):
-                            lpg_count += 1
-                            lpg = int(nilai)
-                        else :
-                            lpg_count = 0
-                        insertDataToDB("lpg",nilai,datetime.now(),lokasi_lpg)
-                    elif value[0] == "C":
-                        nilai = value[1:]
-                        if float(nilai) > float(batas_co):
-                            co_count += 1
-                            co = int(nilai)
-                        else :
-                            co_count = 0
-                        insertDataToDB("carbon",nilai,datetime.now(),lokasi_co)
-                    elif value[0] == "A":
-                        nilai = value[1:]
-                        if float(nilai) > float(batas_smoke):
-                            smoke_count += 1
-                            smoke = int(nilai)
-                        else :
-                            smoke_count = 0
-                        insertDataToDB("smoke",nilai,datetime.now(),lokasi_smoke)
-                    elif value[0] == "P":
-                        nilai = value[1:]
-                        insertDataToDB("ph",nilai,datetime.now(),lokasi_ph)
-                    elif value[0] == "K":
-                        nilai = value[1:]
-                        insertDataToDB("turbidity",nilai,datetime.now(),lokasi_turbidity)
+                    
+                    parameterInisial = value[0] # ex : H
+                    nilaiPengukuran = value[1:] # ex : 70
+                    
+                    #getIdSatuan -> getting idSatuan for insertion to db, returns idSatuan
+                    idSatuanCursor = mydb.cursor(buffered=True)
 
-                    #warning notification for around 30 times (more or less 5 minutes) of hazard detection
-                    if smoke_count >= 30 or co_count >= 30 or lpg_count >= 30:
-                        self.sendWarningEmail(lpg,smoke,co)
-                        smoke_count = 0
-                        co_count = 0
-                        lpg_count = 0
-
+                    queryIdSatuan = "SELECT idSatuan FROM satuan WHERE identitas = %s"
+                    value = (parameterInisial,)
+                    idSatuanCursor.execute(queryIdSatuan, value)
+                    
+                    idSatuan = [item[0] for item in idSatuanCursor.fetchall()][0]
+                    
+                    #inserting to database
+                    insertDataToDB(idSatuan, nilaiPengukuran)
+                    
             time.sleep(self.interval)
 
 # Starting Application
@@ -252,7 +172,7 @@ def mainMenu():
     print("3. Daftar Account User Website Pemantauan")
     print("4. Update User Password")
     print("5. Update Notifikasi User")
-    print("6. Update Lokasi Sensor")
+    print("6. Manage Parameter Sensor")
     print("7. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
@@ -303,28 +223,102 @@ while appRunning:
         updateUserNotifikasi(email,notifikasi)
         mainMenu()
     elif userInput == "6":
-        print("Silahkan Masukkan lokasi dari Node Sensor 1 (temperatur,humiditas,LPG,asap,CO) : ")
-        newLocSensor1 = input()
-        print("Silahkan Masukkan lokasi dari Node Sensor 2 (pH air, turbiditas air) : ")
-        newLocSensor2 = input()
-        file = open("sensor_location.txt", "w")
-        file.write(newLocSensor1 + "," + newLocSensor2)
-        file.close()
-        print("Sukses mengupdate lokasi sensor!")
         
-        #refresh sensor location
-        file = open("sensor_location.txt", "r")
-        sensor_location = file.read().split(sep=",")
+        print("=============================================")
+        print("Manage Parameter Sensor")
+        print("=============================================")
+        print("Parameter sensor yang tersedia : ")
+        print("(Format : Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
         
-        lokasi_temperature = sensor_location[0]
-        lokasi_humidity = sensor_location[0]
-        lokasi_lpg = sensor_location[0]
-        lokasi_smoke = sensor_location[0]
-        lokasi_co = sensor_location[0]
-        lokasi_ph = sensor_location[1]
-        lokasi_turbidity = sensor_location[1]
+        listParam = mydb.cursor(buffered=True)
+
+        listParam.execute("""SELECT identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi  FROM satuan""")
+        hasil = listParam.fetchall()
         
-        mainMenu()
+        for x in hasil:
+            print(x)
+        
+        print("1. Buat Parameter Sensor Baru")
+        print("2. Edit Parameter Sensor")
+        print("3. Kembali")
+        print("=============================================")
+        
+        choice = input()
+        if choice == "1":
+            print("Silahkan masukkan data-data berikut :")
+            
+            print("Inisial dari parameter baru (harus sesuai dengan inisial pesan dari arduino) : ")
+            identitas = input()
+        
+            print("Identitas lengkap berdasarkan inisial dari sensor : ")
+            identitasLengkap = input()
+            
+            print("Satuan standar dari parameter terkait : ")
+            satuanLengkap = input()
+            
+            print("Ambang batas dari parameter terkait : ")
+            ambangBatas = input()
+            
+            print("Lokasi pemasangan dari sensor parameter terkait : ")
+            lokasi = input()
+            
+            print("Apakah warning yang akan diberikan apabila ambang batas terlampaui / kurang dari (max 256 karakter) : ")
+            warning = input()
+        
+            correction = 'inisial : ' + identitas + '\n' + 'nama parameter : ' + identitasLengkap + '\n' + 'satuan : ' + satuanLengkap + '\n' + 'ambang batas : ' + ambangBatas + '\n'  + 'lokasi : ' + lokasi + '\n'  + 'warning : ' + warning
+            print(correction)
+            print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
+            checkCorrection = input()
+            
+            if checkCorrection == "Y":
+                insertSatuanDataToDB(identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+                
+            mainMenu()
+        elif choice == "2":
+            print("Silahkan pilih data yang akan di edit :")
+            print("(Format : id, Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
+
+            listEdit= mydb.cursor(buffered=True)
+
+            listEdit.execute("""SELECT * FROM satuan""")
+            preview = listEdit.fetchall()
+            
+            for x in preview:
+                print(x)
+            
+            print("Silahkan pilih id data yang akan di edit : ")
+            idEdit = input()
+            
+            print("Inisial dari parameter (harus sesuai dengan inisial pesan dari arduino) : ")
+            identitas = input()
+        
+            print("Identitas lengkap berdasarkan inisial dari sensor : ")
+            identitasLengkap = input()
+            
+            print("Satuan standar dari parameter terkait : ")
+            satuanLengkap = input()
+            
+            print("Ambang batas dari parameter terkait : ")
+            ambangBatas = input()
+            
+            print("Lokasi pemasangan dari sensor parameter terkait : ")
+            lokasi = input()
+            
+            print("Warning yang akan diberikan apabila ambang batas terlampaui / kurang dari (max 256 karakter) : ")
+            warning = input()
+        
+            correction = 'inisial : ' + identitas + '\n' + 'nama parameter : ' + identitasLengkap + '\n' + 'satuan : ' + satuanLengkap + '\n' + 'ambang batas : ' + ambangBatas + '\n'  + 'lokasi : ' + lokasi + '\n'  + 'warning : ' + warning
+            print(correction)
+            
+            print("Periksa kembali parameter yang telah diubah, apakah sesuai? (Y/N)")
+            
+            checkCorrection = input()
+            
+            if checkCorrection == "Y":
+                updateSatuanDataToDB(idEdit , identitas, identitasLengkap, satuanLengkap, ambangBatas, lokasi, warning)
+            mainMenu()
+        else:
+            mainMenu()
     elif userInput == "7":
         sensingStatus = False
         appRunning = False
