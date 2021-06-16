@@ -184,7 +184,7 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-            #print(data)
+            print(data)
             #data = "H90.00 T30.00 L200.00 C200.00 A200.00 P14.00 K10.00"
             #data = "H60 T25 L0 C0 A0 P7 K0" 
 
@@ -311,6 +311,19 @@ while appRunning:
         file.write(newLocSensor1 + "," + newLocSensor2)
         file.close()
         print("Sukses mengupdate lokasi sensor!")
+        
+        #refresh sensor location
+        file = open("sensor_location.txt", "r")
+        sensor_location = file.read().split(sep=",")
+        
+        lokasi_temperature = sensor_location[0]
+        lokasi_humidity = sensor_location[0]
+        lokasi_lpg = sensor_location[0]
+        lokasi_smoke = sensor_location[0]
+        lokasi_co = sensor_location[0]
+        lokasi_ph = sensor_location[1]
+        lokasi_turbidity = sensor_location[1]
+        
         mainMenu()
     elif userInput == "7":
         sensingStatus = False
