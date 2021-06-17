@@ -192,7 +192,7 @@ class sensorSense():
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
             #data = "H67.00 T26.00 L0.00 C0.00 A0.00 P7.20 K0.00"
-            print(data)
+            #print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
             inisialSensor = mydb.cursor(buffered=True)

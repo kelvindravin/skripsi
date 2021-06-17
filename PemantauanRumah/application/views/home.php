@@ -85,7 +85,7 @@
                         if (ambangBatas < nilai){ 
                             document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warning,span_close);//warning 
                         }else if(nilai < ambangBatas){
-                            document.getElementById(identitas + "_warning").innerHTML = span_safe.concat("Terpantau normal!",span_close);//safe 
+                            document.getElementById(identitas + "_warning").innerHTML = span_safe.concat("Parameter aman!",span_close);//safe 
                         }else{
                             document.getElementById(identitas + "_warning").innerHTML = "-";//neutral 
                         }
