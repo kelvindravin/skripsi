@@ -14,14 +14,14 @@ appRunning = True
 sensingStatus = False
 
 #serial details
-# serial = serial.Serial(
-#     port='/dev/ttyUSB0',
-#     baudrate=9600,
-#     parity=serial.PARITY_NONE,
-#     stopbits=serial.STOPBITS_ONE,
-#     bytesize=serial.EIGHTBITS,
-#     timeout=3
-# )
+serial = serial.Serial(
+     port='/dev/ttyUSB0',
+     baudrate=9600,
+     parity=serial.PARITY_NONE,
+     stopbits=serial.STOPBITS_ONE,
+     bytesize=serial.EIGHTBITS,
+     timeout=3
+ )
 
 #database details
 mydb = mysql.connector.connect(
@@ -190,9 +190,9 @@ class sensorSense():
         ambangBatasArray = [item[0] for item in ambangBatas.fetchall()] #returns in order [0]-> LPG, [1]->Carbon, [2]->Smoke
         
         while sensingStatus:            
-            #data = serial.readline().decode("ascii").strip()
-            data = "H67.00 T26.00 L0.00 C0.00 A0.00 P7.20 K0.00"
-            #print(data)
+            data = serial.readline().decode("ascii").strip()
+            #data = "H67.00 T26.00 L0.00 C0.00 A0.00 P7.20 K0.00"
+            print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
             inisialSensor = mydb.cursor(buffered=True)
