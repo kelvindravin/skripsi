@@ -235,7 +235,11 @@ class sensorSense():
                     value = (parameterInisial,)
                     idSensorCursor.execute(queryIdSensor, value)
                     
-                    idSensor = [item[0] for item in idSensorCursor.fetchall()][0]
+					#error handling for empty result
+					if not idSensorCursor.fetchall() :
+						break
+					else :
+						idSensor = [item[0] for item in idSensorCursor.fetchall()][0]
                     
                     #getIdNode -> getting idNode for insertion to db, returns idNode
                     idNodeCursor = mydb.cursor(buffered=True)
@@ -244,7 +248,11 @@ class sensorSense():
                     value = (parameterInisial,)
                     idNodeCursor.execute(queryIdNode, value)
                     
-                    idNode= [item[0] for item in idNodeCursor.fetchall()][0]
+					#error handling for empty result
+					if not idNodeCursor.fetchall() :
+						break
+					else :
+						idNode= [item[0] for item in idNodeCursor.fetchall()][0]
                     
                     #inserting to database
                     insertDataToDB(idSensor, nilaiPengukuran)
