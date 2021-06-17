@@ -33,19 +33,14 @@
                 Pilih Parameter Sensor*
                 <div class="text text-danger">*Kosongkan untuk menampilkan seluruh parameter sensor</div>
                 
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <input type="checkbox" name="parameter[]" value="temperature"> Temperatur <br>
-                            <input type="checkbox" name="parameter[]" value="humidity"> Kelembaban <br>
-                            <input type="checkbox" name="parameter[]" value="ph"> pH Air <br>
-                            <input type="checkbox" name="parameter[]" value="turbidity"> Kekeruhan Air <br>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="checkbox" name="parameter[]" value="lpg"> Gas LPG <br>
-                            <input type="checkbox" name="parameter[]" value="carbon"> Gas Karbon <br>
-                            <input type="checkbox" name="parameter[]" value="smoke"> Asap <br>
-                        </div>
-                    </div>
+                    <?php 
+                    
+                        foreach ($listSensors as $key => $value) {
+                            echo '
+                                <input type="checkbox" name="parameter[]" value="'.$value['identitasSensor'].'"> '.$value['identitasSensor'].' <br>
+                            ';
+                        }
+                    ?>
                 </div>
                 
                 <div class="text-center mt-4">

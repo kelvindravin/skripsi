@@ -30,9 +30,9 @@
                     foreach ($dataHistory as $key => $value) {
                     ?>
                         <tr>
-                            <td><?php echo $value->timestamp; ?></td>
-                            <td><?php echo $value->sensorPengukur; ?></td>
-                            <td><?php echo $value->pengukuran; ?></td>
+                            <td><?php echo $value->waktu; ?></td>
+                            <td><?php echo $value->identitasSensor; ?></td>
+                            <td><?php echo $value->nilaiPengukuran; ?></td>
                         </tr>
                     <?php
                     }

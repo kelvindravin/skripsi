@@ -191,7 +191,7 @@ class sensorSense():
         
         while sensingStatus:            
             #data = serial.readline().decode("ascii").strip()
-            data = "H0.00 T0.00 L200.00 C200.00 A200.00 P0.00 K0.00"
+            data = "H67.00 T26.00 L0.00 C0.00 A0.00 P7.20 K0.00"
             #print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])

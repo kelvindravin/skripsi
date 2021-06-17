@@ -15,7 +15,7 @@ class Pemantauan extends CI_Model
 	{
 		$query = $this->db
 			->select_max('waktu')
-			->get('parameter');
+			->get('pengukuran');
 		return $query->result();	
 	}
 
@@ -23,89 +23,35 @@ class Pemantauan extends CI_Model
 	{
 		$query = $this->db
 			->where('waktu',$latestTime)
-			->join('satuan', 'satuan.idSatuan = parameter.idSatuan')->get('parameter');
+			->join('pengukuran', 'sensor.idSensor = pengukuran.idSensor')
+			->join('nodeSensor', 'sensor.idNode = nodeSensor.idNode')
+			->get('sensor');
 		return $query->result();
 	}
 	
-	public function getTemperature(){
-		$query = $this->db
-			->where('sensorPengukur','temperature')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getHumidity(){
-		$query = $this->db
-			->where('sensorPengukur','humidity')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getLPG(){
-		$query = $this->db
-			->where('sensorPengukur','LPG')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getCarbon(){
-		$query = $this->db
-			->where('sensorPengukur','Carbon')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getSmoke(){
-		$query = $this->db
-			->where('sensorPengukur','Smoke')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getPH(){
-		$query = $this->db
-			->where('sensorPengukur','pH')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
-	}
-
-	public function getTurbidity(){
-		$query = $this->db
-			->where('sensorPengukur','turbidity')
-			->order_by('timestamp','desc')
-			->get('sensorReading');
-		return $query->result();
+	public function getAllSensors(){
+		$query = $this->db->distinct()
+			->select('identitasSensor')
+			->get('sensor');
+		return $query->result_array();
 	}
 	
 	public function getSearchData($start,$end,$parameters){
 		$parameterFilter = "(";
 		
 		foreach($parameters as $key => $value){
-			$parameterFilter .= "sensorPengukur = '$value'";
+			$parameterFilter .= "identitasSensor = '$value'";
 			if($key < sizeof($parameters)-1){
 				$parameterFilter .= " OR ";
 			}
 		}
 		
 		$parameterFilter.= ")";
-		
 		$query = $this->db
-			->where('DATE(timestamp) BETWEEN "'. date('Y-m-d', strtotime($start)). '" and "'. date('Y-m-d', strtotime($end)).'"')
+			->join('sensor', 'sensor.idSensor = pengukuran.idSensor')
+			->where('DATE(waktu) BETWEEN "'. date('Y-m-d', strtotime($start)). '" and "'. date('Y-m-d', strtotime($end)).'"')
 			->where($parameterFilter)
-			->get('sensorReading');
-		return $query->result();
-	}
-	
-	public function getSensingStatus(){
-		$query = $this->db
-			->select_max('timestamp')
-			->get('sensorReading');
+			->get('pengukuran');
 		return $query->result();
 	}
 }

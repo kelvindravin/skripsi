@@ -37,18 +37,10 @@ class C_Home extends CI_Controller
     public function loadHome()
     {
         //list of data
-        //$this->data['ph'] = $this->Pemantauan->getPH();
-        //$this->data['turbidity'] = $this->Pemantauan->getTurbidity();
-        //$this->data['humidity'] = $this->Pemantauan->getHumidity();
-        //$this->data['temperature'] = $this->Pemantauan->getTemperature();
-        //$this->data['lpg'] = $this->Pemantauan->getLPG();
-        //$this->data['carbon'] = $this->Pemantauan->getCarbon();
-        //$this->data['smoke'] = $this->Pemantauan->getSmoke();
         $waktu = $this->Pemantauan->getLatestReadingTime();
 
         $this->data['readings'] = $this->Pemantauan->getReadingOnATimestamp($waktu[0]->waktu);
         
-        //print_r($this->data['readings'][0]);exit();
         
         $this->nav['current_nav'] = "home";
         $this->load->view('header');
@@ -59,10 +51,11 @@ class C_Home extends CI_Controller
 
     public function loadHistorySearch(){
         $this->nav['current_nav'] = "history";
+        $this->data['listSensors'] = $this->Pemantauan->getAllSensors();
 
         $this->load->view('header');
         $this->load->view('navbar',$this->nav);
-        $this->load->view('historySearch');
+        $this->load->view('historySearch',$this->data);
         $this->load->view('footer');
     }
     
@@ -71,7 +64,9 @@ class C_Home extends CI_Controller
         $searchInput = $this->input->post();
         
         if(empty($searchInput['parameter'])){
-                $searchInput['parameter'] = array('temperature','humidity','ph','lpg','carbon','smoke','turbidity');
+                $rawData = $this->Pemantauan->getAllSensors();
+                $searchInput['parameter'] = array_column($rawData,'identitasSensor');
+                
         }
         
         $this->data['dataHistory'] = $this->Pemantauan->getSearchData($searchInput['tanggalMulai'], $searchInput['tanggalSelesai'], $searchInput['parameter']);
@@ -83,37 +78,11 @@ class C_Home extends CI_Controller
     }
 
         public function getRealtimeUpdate(){
-        $result['newTemperature'] = $this->Pemantauan->getTemperature()[0]->pengukuran;
-        $result['newTemperatureLoc'] = $this->Pemantauan->getTemperature()[0]->lokasi;
-        $result['timestampTemperature'] = $this->Pemantauan->getTemperature()[0]->timestamp;
-        
-        $result['newHumidity'] = $this->Pemantauan->getHumidity()[0]->pengukuran;
-        $result['newHumidityLoc'] = $this->Pemantauan->getHumidity()[0]->lokasi;
-        $result['timestampHumidity'] = $this->Pemantauan->getHumidity()[0]->timestamp;
-        
-        $result['newPh'] = $this->Pemantauan->getPH()[0]->pengukuran;
-        $result['newPhLoc'] = $this->Pemantauan->getPH()[0]->lokasi;
-        $result['timestampPh'] = $this->Pemantauan->getPH()[0]->timestamp;
+        $waktu = $this->Pemantauan->getLatestReadingTime();
 
-        $result['newTurbidity'] = $this->Pemantauan->getTurbidity()[0]->pengukuran;
-        $result['newTurbidityLoc'] = $this->Pemantauan->getTurbidity()[0]->lokasi;
-        $result['timestampTurbidity'] = $this->Pemantauan->getTurbidity()[0]->timestamp;
+        $readings = $this->Pemantauan->getReadingOnATimestamp($waktu[0]->waktu);
         
-        $result['newLPG'] = $this->Pemantauan->getLPG()[0]->pengukuran;
-        $result['newLPGLoc'] = $this->Pemantauan->getLPG()[0]->lokasi;
-        $result['timestampLPG'] = $this->Pemantauan->getLPG()[0]->timestamp;
-        
-        $result['newCO'] = $this->Pemantauan->getCarbon()[0]->pengukuran;
-        $result['newCOLoc'] = $this->Pemantauan->getCarbon()[0]->lokasi;
-        $result['timestampCO'] = $this->Pemantauan->getCarbon()[0]->timestamp;
-        
-        $result['newSmoke'] = $this->Pemantauan->getSmoke()[0]->pengukuran;
-        $result['newSmokeLoc'] = $this->Pemantauan->getSmoke()[0]->lokasi;
-        $result['timestampSmoke'] = $this->Pemantauan->getSmoke()[0]->timestamp;
-        
-        $result['updatedTimestamp'] = $this->Pemantauan->getSensingStatus()[0]->timestamp;
-        
-        echo json_encode($result);
+        echo json_encode($readings);
 	}
         
         public function getSensingStatus(){
