@@ -191,7 +191,7 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-            #data = "H67.00 T26.00 L0.00 C0.00 A0.00 P7.20 K0.00"
+#             data = "AH67.00 AT26.00 AL0.00 AC0.00 AA0.00 BP7.20 BK0.00"
             #print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
@@ -206,8 +206,9 @@ class sensorSense():
                 #splitting parameter from value and insert to DB
                 for value in parameters:
                     
-                    parameterInisial = value[0] # ex : H
-                    nilaiPengukuran = value[1:] # ex : 70
+                    parameterNode = value[0] #ex : A
+                    parameterInisial = value[1] # ex : H
+                    nilaiPengukuran = value[2:] # ex : 70
                     
                     #violation checking for email warning
                     if parameterInisial == "L" and float(nilaiPengukuran) >= ambangBatasArray[0]:
@@ -228,37 +229,21 @@ class sensorSense():
                         smoke_violation = 0
                         co_violation = 0
                     
-                    #getIdSensor -> getting idSensor for insertion to db, returns idSensor
-                    idSensorCursor = mydb.cursor(buffered=True)
+                    #getId -> getting namaNode and idSensor for insertion to db, returns namaNode, idSensor
+                    idCursor = mydb.cursor(buffered=True)
 
-                    queryIdSensor = "SELECT idSensor FROM sensor WHERE inisialSensor = %s"
-                    value = (parameterInisial,)
-                    idSensorCursor.execute(queryIdSensor, value)
+                    queryId = "SELECT sensor.idSensor, nodeSensor.namaNode FROM nodeSensor JOIN sensor ON nodeSensor.idNode = sensor.idNode WHERE inisialSensor = %s AND namaNode = %s"
+                    value = (parameterInisial, parameterNode)
+                    idCursor.execute(queryId, value)
                     
-					#error handling for empty result
-					if not idSensorCursor.fetchall() :
-						break
-					else :
-						idSensor = [item[0] for item in idSensorCursor.fetchall()][0]
-                    
-                    #getIdNode -> getting idNode for insertion to db, returns idNode
-                    idNodeCursor = mydb.cursor(buffered=True)
-
-                    queryIdNode = "SELECT nodeSensor.idNode FROM nodeSensor JOIN sensor ON nodeSensor.idNode = sensor.idNode WHERE inisialSensor = %s"
-                    value = (parameterInisial,)
-                    idNodeCursor.execute(queryIdNode, value)
-                    
-					#error handling for empty result
-					if not idNodeCursor.fetchall() :
-						break
-					else :
-						idNode= [item[0] for item in idNodeCursor.fetchall()][0]
+                    #error handling for empty result
+                    ids= idCursor.fetchall()[0]
                     
                     #inserting to database
-                    insertDataToDB(idSensor, nilaiPengukuran)
-                    
+                    insertDataToDB(ids[0], nilaiPengukuran)
+                       
             time.sleep(self.interval)
-
+            
 # Starting Application
 
 # ==== Main Menu Component ====
