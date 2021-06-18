@@ -55,7 +55,7 @@ void loop() {
     kadarAsap = mq2.readSmoke();
     
   //Xbee Communication
-  String hasil = " H" + String(humiditas) + " T" + String(temperatur) + " L" + String(kadarLPG) + " C" + String(kadarCO) + " A" + String(kadarAsap);
+  String hasil = " AH" + String(humiditas) + " AT" + String(temperatur) + " AL" + String(kadarLPG) + " AC" + String(kadarCO) + " AA" + String(kadarAsap);
   Serial.println(hasil);
   xbee.print(hasil);
   delay(6000);

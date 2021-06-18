@@ -38,10 +38,9 @@ void loop() {
     phAir = ph(pHVoltage);
     turbiditasAir = turbiditas(turbidityVoltage);
     
-    Serial.println("pH : " + String(phAir));
-    Serial.println("turbiditas : " + String(turbiditasAir) + " turbiditasV : " + String(turbidityVoltage));
+    Serial.println(" BP" + String(phAir) + " BK" + String(turbiditasAir));
     
-    xbee.print(" P" + String(phAir) + " K" + String(turbiditasAir));
+    xbee.print(" BP" + String(phAir) + " BK" + String(turbiditasAir));
     
     delay(6000);
 }
