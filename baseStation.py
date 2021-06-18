@@ -189,6 +189,10 @@ class sensorSense():
         ambangBatas.execute("""SELECT ambangBatas FROM sensor WHERE inisialSensor = 'L' OR inisialSensor = 'C' OR inisialSensor = 'A'""")
         ambangBatasArray = [item[0] for item in ambangBatas.fetchall()] #returns in order [0]-> LPG, [1]->Carbon, [2]->Smoke
         
+        #removing last data
+        data = serial.readline().decode("ascii").strip()
+        data = ""
+        
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
 #             data = "AH67.00 AT26.00 AL0.00 AC0.00 AA0.00 BP7.20 BK0.00"
@@ -237,10 +241,10 @@ class sensorSense():
                     idCursor.execute(queryId, value)
                     
                     #error handling for empty result
-                    ids= idCursor.fetchall()[0]
+                    ids= idCursor.fetchall()[0][0]
                     
                     #inserting to database
-                    insertDataToDB(ids[0], nilaiPengukuran)
+                    insertDataToDB(ids, nilaiPengukuran)
                        
             time.sleep(self.interval)
             
