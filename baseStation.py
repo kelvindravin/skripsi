@@ -54,11 +54,11 @@ def updateUserPassword(email,password):
     mydb.commit()
     print("Account Password Updated!")
     
-def updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode):
+def updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas, warningAmbangBawah, idNode):
     cursor = mydb.cursor()
 
-    query = "UPDATE sensor SET inisialSensor = %s, identitasSensor = %s, satuan = %s, ambangBatas = %s, warning = %s, idNode = %s WHERE idSatuan = %s"
-    val = (inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode, idEdit)
+    query = "UPDATE sensor SET inisialSensor = %s, identitasSensor = %s, satuan = %s, ambangBatasAtas = %s, ambangBatasBawah = %s , warningAmbangAtas = %s, warningAmbangBawah = %s, idNode = %s WHERE idSensor = %s"
+    val = (inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas , warningAmbangBawah, idNode, idEdit)
 
     cursor.execute(query, val)
 
@@ -97,11 +97,11 @@ def insertDataToDB(idSensor, nilaiPengukuran):
 
     mydb.commit()
     
-def insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode):
+def insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO sensor (inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode) VALUES (%s,%s,%s,%s,%s,%s)"
-    val = (inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode)
+    query = "INSERT INTO sensor (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+    val = (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode)
 
     cursor.execute(query, val)
 
@@ -186,7 +186,7 @@ class sensorSense():
         
         ambangBatas = mydb.cursor(buffered=True)
 
-        ambangBatas.execute("""SELECT ambangBatas FROM sensor WHERE inisialSensor = 'L' OR inisialSensor = 'C' OR inisialSensor = 'A'""")
+        ambangBatas.execute("""SELECT ambangBatasAtas FROM sensor WHERE inisialSensor = 'L' OR inisialSensor = 'C' OR inisialSensor = 'A'""")
         ambangBatasArray = [item[0] for item in ambangBatas.fetchall()] #returns in order [0]-> LPG, [1]->Carbon, [2]->Smoke
         
         #removing last data
@@ -195,7 +195,9 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-#             data = "AH67.00 AT26.00 AL0.00 AC0.00 AA0.00 BP7.20 BK0.00"
+#             data = "AH71.00 AT29.00 AL10.00 AC26.00 AA1.00 BP8.20 BK11.00"
+#             data = "AH11.00 AT17.00 AL0.00 AC0.00 AA0.00 BP6.20 BK0.00"
+#             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
             #print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
@@ -317,11 +319,11 @@ while appRunning:
         print("Manage Parameter Sensor")
         print("=============================================")
         print("Sensor-sensor yang tersedia : ")
-        #print("(Format : Inisial Sensor , Identitas Lengkap , Satuan Standar , Ambang Batas , Lokasi Penempatan)")
+        print("(Format : Inisial Sensor , Lokasi Penempatan ,  Identitas Lengkap , Satuan Standar , Ambang Batas Atas , Ambang Batas Bawah , Warning Ambang Batas Atas , Warning Ambang Batas Bawah)")
         
         listSensor = mydb.cursor(buffered=True)
 
-        listSensor.execute("""SELECT namaNode ,lokasiNode, inisialSensor, identitasSensor, satuan, ambangBatas, warning  FROM sensor JOIN nodeSensor ON sensor.idNode = nodeSensor.idNode""")
+        listSensor.execute("""SELECT namaNode ,lokasiNode, inisialSensor, identitasSensor, satuan, ambangBatasAtas, warningAmbangAtas, ambangBatasBawah, warningAmbangBawah FROM sensor JOIN nodeSensor ON sensor.idNode = nodeSensor.idNode""")
         hasil = listSensor.fetchall()
         
         for x in hasil:
@@ -379,19 +381,25 @@ while appRunning:
             print("Satuan standar hasil pengukuran dari sensor terkait : ")
             satuan = input()
             
-            print("Ambang batas hasil pengukuran dari parameter terkait : ")
-            ambangBatas = input()
+            print("Ambang batas atas pada pengukuran dari parameter terkait (apabila nilai parameter melebihi ambang batas atas berarti bahaya) : ")
+            ambangBatasAtas = input()
             
-            print("Apakah warning yang akan diberikan apabila hasil pengukuran memenuhi ambang batas dari (max 256 karakter) : ")
-            warning = input()
+            print("Ambang batas bawah pada pengukuran dari parameter terkait (apabila nilai parameter kurang dari ambang batas bawah berarti bahaya) : ")
+            ambangBatasBawah = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran melebihi ambang batas atas (max 256 karakter) : ")
+            warningBatasAtas = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran kurang dari ambang batas bawah (max 256 karakter) : ")
+            warningBatasBawah = input()
         
-            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas : ' + ambangBatas + '\n' + 'warning : ' + warning
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah
             print(correction)
             print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode)
+                insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode)
                 
             mainMenu()
         elif choice == "3":
@@ -461,20 +469,26 @@ while appRunning:
             print("Satuan standar hasil pengukuran dari sensor terkait : ")
             satuan = input()
             
-            print("Ambang batas hasil pengukuran dari parameter terkait : ")
-            ambangBatas = input()
+            print("Ambang batas atas pada pengukuran dari parameter terkait (apabila nilai parameter melebihi ambang batas atas berarti bahaya) : ")
+            ambangBatasAtas = input()
             
-            print("Apakah warning yang akan diberikan apabila hasil pengukuran memenuhi ambang batas dari (max 256 karakter) : ")
-            warning = input()
+            print("Ambang batas bawah pada pengukuran dari parameter terkait (apabila nilai parameter kurang dari ambang batas bawah berarti bahaya) : ")
+            ambangBatasBawah = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran melebihi ambang batas atas (max 256 karakter) : ")
+            warningBatasAtas = input()
+            
+            print("Apakah warning yang akan diberikan apabila hasil pengukuran kurang dari ambang batas bawah (max 256 karakter) : ")
+            warningBatasBawah = input()
         
-            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas : ' + ambangBatas + '\n' + 'warning : ' + warning
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah
             print(correction)
             
             print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatas, warning, idNode)
+                updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode)
                 
             mainMenu()
         else:

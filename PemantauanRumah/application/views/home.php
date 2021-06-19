@@ -64,13 +64,16 @@
                 data: {},
                 success: function(data) {
                     // counting violation of detection for parameters
+                    console.log(data);
                     for (const value of data){
                         var lokasi = value.lokasiNode;
                         var waktu = value.waktu;
                         var nilai = value.nilaiPengukuran;
                         var satuan = value.satuan;
-                        var ambangBatas = value.ambangBatas;
-                        var warning = value.warning;
+                        var ambangBatasAtas = value.ambangBatasAtas;
+                        var ambangBatasBawah = value.ambangBatasBawah;
+                        var warningAmbangAtas = value.warningAmbangAtas;
+                        var warningAmbangBawah = value.warningAmbangBawah;
                         var identitas = value.identitasSensor;
                         
                         document.getElementById(identitas).innerHTML = nilai;//nilai
@@ -82,10 +85,12 @@
                         var span_warning = "<span class=\"badge badge-danger\">"
                         var span_close = "</span>";
                         
-                        if (ambangBatas < nilai){ 
-                            document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warning,span_close);//warning 
-                        }else if(nilai < ambangBatas){
-                            document.getElementById(identitas + "_warning").innerHTML = span_safe.concat("Parameter aman!",span_close);//safe 
+                        if (ambangBatasAtas < nilai){ 
+                            document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warningAmbangAtas,span_close);//warning ambang batas atas
+                        }else if(nilai < ambangBatasAtas && nilai >= ambangBatasBawah){
+                            document.getElementById(identitas + "_warning").innerHTML = span_safe.concat("Parameter terpantau aman!",span_close);//safe 
+                        }else if(nilai < ambangBatasBawah){
+                            document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warningAmbangBawah,span_close);//warning ambang batas bawah
                         }else{
                             document.getElementById(identitas + "_warning").innerHTML = "-";//neutral 
                         }
@@ -97,8 +102,7 @@
                         
                         var currentTime = Date.now();
                         var checkTime = (new Date(waktu) / 1000 ) + "000";
-                        console.log(currentTime);
-                        console.log(checkTime);
+
                         if((currentTime - checkTime) / 1000 > 300){
                             document.getElementById(identitas).innerHTML = "N/A";//nilai
                             document.getElementById(identitas + "_warning").innerHTML = "<span class=\"badge badge-danger\">OFFLINE</span>";//offline tag
