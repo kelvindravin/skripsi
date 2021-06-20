@@ -14,7 +14,7 @@ appRunning = True
 sensingStatus = False
 
 #serial details
-# serial = serial.Serial(
+serial = serial.Serial(
      port='/dev/ttyUSB0',
      baudrate=9600,
      parity=serial.PARITY_NONE,
