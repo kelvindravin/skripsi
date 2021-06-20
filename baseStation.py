@@ -177,11 +177,11 @@ class sensorSense():
 
         ambangBatas.execute("""SELECT inisialSensor, identitasSensor, satuan ,ambangBatasAtas, ambangBatasBawah FROM sensor WHERE notifPriority = 1""")
         ambangBatasArray = ambangBatas.fetchall() #returns ambangBatasAtas, ambangBatasBawah
-#         print(ambangBatasArray[0])
         
         #removing last data
-#         data = serial.readline().decode("ascii").strip()
+        data = serial.readline().decode("ascii").strip()
         data = ""
+        
         #to prevent email spam
         emailDelay = False
         delayCounter = 0
