@@ -14,7 +14,7 @@ appRunning = True
 sensingStatus = False
 
 #serial details
-serial = serial.Serial(
+# serial = serial.Serial(
      port='/dev/ttyUSB0',
      baudrate=9600,
      parity=serial.PARITY_NONE,
@@ -54,11 +54,11 @@ def updateUserPassword(email,password):
     mydb.commit()
     print("Account Password Updated!")
     
-def updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas, warningAmbangBawah, idNode):
+def updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas, warningAmbangBawah, idNode, notifPriority):
     cursor = mydb.cursor()
 
-    query = "UPDATE sensor SET inisialSensor = %s, identitasSensor = %s, satuan = %s, ambangBatasAtas = %s, ambangBatasBawah = %s , warningAmbangAtas = %s, warningAmbangBawah = %s, idNode = %s WHERE idSensor = %s"
-    val = (inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas , warningAmbangBawah, idNode, idEdit)
+    query = "UPDATE sensor SET inisialSensor = %s, identitasSensor = %s, satuan = %s, ambangBatasAtas = %s, ambangBatasBawah = %s , warningAmbangAtas = %s, warningAmbangBawah = %s, idNode = %s, notifPriority = %s WHERE idSensor = %s"
+    val = (inisialSensor, identitasSensor, satuan, ambangAtas, ambangBawah, warningAmbangAtas , warningAmbangBawah, idNode, notifPriority, idEdit)
 
     cursor.execute(query, val)
 
@@ -97,11 +97,11 @@ def insertDataToDB(idSensor, nilaiPengukuran):
 
     mydb.commit()
     
-def insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode):
+def insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode, notifPriority):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO sensor (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
-    val = (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, idNode)
+    query = "INSERT INTO sensor (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, notifPriority, idNode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    val = (inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah , warningAmbangAtas, warningAmbangBawah, notifPriority, idNode)
 
     cursor.execute(query, val)
 
@@ -144,7 +144,7 @@ class sensorSense():
 
         sensingThread.start()
         
-    def sendWarningEmail(self,lpg,smoke,co,batas_lpg,batas_smoke,batas_co):
+    def sendWarningEmail(self,notif):
         sender_address = '2017730022.monitoring@gmail.com'
         sender_pass = 'homemonitoring'
         
@@ -152,12 +152,10 @@ class sensorSense():
         cursor.execute("""SELECT email FROM user WHERE notifikasi = 1""")
         result = cursor.fetchone()
         
-        mail_content = '''Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n'''
-        warning_content_lpg = '''Kadar LPG dalam udara : ''' + str(lpg) + ''' PPM (dengan batas sebesar ''' + str(batas_lpg) + '''PPM) \n'''
-        warning_content_co = '''Kadar CO dalam udara : ''' + str(co) + ''' PPM (dengan batas sebesar ''' + str(batas_co) + '''PPM) \n'''
-        warning_content_smoke = '''Kadar Asap dalam udara : ''' + str(smoke) + ''' PPM (dengan batas sebesar ''' + str(batas_smoke) + '''PPM) \n\n'''
-        mail_end_content = '''Berhati-hatilah, dan harap periksa kondisi tersebut\nHome Monitoring - 2017730022'''
-        content = mail_content + warning_content_lpg + warning_content_co + warning_content_smoke + mail_end_content
+        mail_content = "Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n"
+        mail_end = "\n\n Harap berhati-hatilah dan periksa kembali keadaan tersebut! \n\n Home Monitoring System - 2017730022"
+
+        content = mail_content + notif + mail_end
         
         for receiver_address in result:
             message = MIMEMultipart()
@@ -174,28 +172,23 @@ class sensorSense():
             session.sendmail(sender_address, receiver_address, text)
             session.quit()
 
-    def run(self):
-        #violation counter of LPG, CO and Smoke
-        lpg_violation = 0
-        smoke_violation = 0
-        co_violation = 0
-        
-        lpg_violation_value = ""
-        smoke_violation_value = ""
-        co_violation_value = ""
-        
+    def run(self):        
         ambangBatas = mydb.cursor(buffered=True)
 
-        ambangBatas.execute("""SELECT ambangBatasAtas FROM sensor WHERE inisialSensor = 'L' OR inisialSensor = 'C' OR inisialSensor = 'A'""")
-        ambangBatasArray = [item[0] for item in ambangBatas.fetchall()] #returns in order [0]-> LPG, [1]->Carbon, [2]->Smoke
+        ambangBatas.execute("""SELECT inisialSensor, identitasSensor, satuan ,ambangBatasAtas, ambangBatasBawah FROM sensor WHERE notifPriority = 1""")
+        ambangBatasArray = ambangBatas.fetchall() #returns ambangBatasAtas, ambangBatasBawah
+#         print(ambangBatasArray[0])
         
         #removing last data
-        data = serial.readline().decode("ascii").strip()
+#         data = serial.readline().decode("ascii").strip()
         data = ""
+        #to prevent email spam
+        emailDelay = False
+        delayCounter = 0
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-#             data = "AH71.00 AT29.00 AL10.00 AC26.00 AA1.00 BP8.20 BK11.00"
+#             data = "AH71.00 AT29.00 AL10.00 AC0.00 AA0.00 BP8.20 BK11.00"
 #             data = "AH11.00 AT17.00 AL0.00 AC0.00 AA0.00 BP6.20 BK0.00"
 #             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
             #print(data)
@@ -208,6 +201,8 @@ class sensorSense():
 
             if data != "":
                 parameters = data.split() #returns -> [T0,H0,L0]
+                emailWarningNotification = ""
+                warningFlag = False
                 
                 #splitting parameter from value and insert to DB
                 for value in parameters:
@@ -217,23 +212,16 @@ class sensorSense():
                     nilaiPengukuran = value[2:] # ex : 70
                     
                     #violation checking for email warning
-                    if parameterInisial == "L" and float(nilaiPengukuran) >= ambangBatasArray[0]:
-                        lpg_violation += 1
-                        lpg_violation_value = nilaiPengukuran
-                        
-                    if parameterInisial == "C" and float(nilaiPengukuran) >= ambangBatasArray[1]:
-                        co_violation += 1
-                        co_violation_value = nilaiPengukuran
-                        
-                    if parameterInisial == "A" and float(nilaiPengukuran) >= ambangBatasArray[2]:
-                        smoke_violation += 1
-                        smoke_violation_value = nilaiPengukuran
-                        
-                    if lpg_violation > 5 or co_violation > 5 or smoke_violation > 5:
-                        self.sendWarningEmail(lpg_violation_value,smoke_violation_value,co_violation_value,ambangBatasArray[0],ambangBatasArray[2],ambangBatasArray[1])
-                        lpg_violation = 0
-                        smoke_violation = 0
-                        co_violation = 0
+
+                    for violationCheck in ambangBatasArray:
+                        if parameterInisial == violationCheck[0] :
+                            if float(nilaiPengukuran) > violationCheck[3]:
+                                warningFlag = True
+                                emailWarningNotification += "Nilai pada parameter " + violationCheck[1] + " bernilai :" + nilaiPengukuran + " " + violationCheck[2] + " melebihi ambang batas sejumlah " + str(violationCheck[3]) + " " + violationCheck[2]
+                            elif float(nilaiPengukuran) < violationCheck[4]:
+                                warningFlag = True
+                                emailWarningNotification += "Nilai pada parameter " + violationCheck[1] + " bernilai :" + nilaiPengukuran + " " + violationCheck[2] + " kurang dari ambang batas sejumlah " + str(violationCheck[4]) + " " + violationCheck[2]
+                            emailWarningNotification += "\n"
                     
                     #getId -> getting namaNode and idSensor for insertion to db, returns namaNode, idSensor
                     idCursor = mydb.cursor(buffered=True)
@@ -247,7 +235,21 @@ class sensorSense():
                     
                     #inserting to database
                     insertDataToDB(ids, nilaiPengukuran)
-                       
+            
+            if warningFlag and emailDelay == False:
+                print("sent!")
+                self.sendWarningEmail(emailWarningNotification)
+                warningFlag = False
+                emailDelay = True
+                delayCounter = 20 #more or less is one minute long
+            
+            if emailDelay:
+                delayCounter -= 1
+            
+            if delayCounter == 0:
+                print("email delay was resetted, email will be sent again")
+                emailDelay = False
+                
             time.sleep(self.interval)
             
 # Starting Application
@@ -392,14 +394,17 @@ while appRunning:
             
             print("Apakah warning yang akan diberikan apabila hasil pengukuran kurang dari ambang batas bawah (max 256 karakter) : ")
             warningBatasBawah = input()
+            
+            print("Aktifkan pengawasan via notifikasi untuk parameter ini? (input 0 untuk tidak, 1 untuk iya) : ")
+            notifPriority = input()
         
-            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah + '\n' + 'Pengawasan Notifikasi: ' + notifPriority
             print(correction)
             print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode)
+                insertSensorDataToDB(inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode, notifPriority)
                 
             mainMenu()
         elif choice == "3":
@@ -480,15 +485,18 @@ while appRunning:
             
             print("Apakah warning yang akan diberikan apabila hasil pengukuran kurang dari ambang batas bawah (max 256 karakter) : ")
             warningBatasBawah = input()
+            
+            print("Aktifkan pengawasan via notifikasi untuk parameter ini? (input 0 untuk tidak, 1 untuk iya) : ")
+            notifPriority = input()
         
-            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah
+            correction = 'inisial sensor : ' + inisialSensor + '\n' + 'nama hasil pengukuran sensor : ' + identitasSensor + '\n' + 'satuan : ' + satuan + '\n' + 'ambang batas atas : ' + ambangBatasAtas + '\n' + 'warning ambang batas atas: ' + warningBatasAtas + 'ambang batas bawah : ' + ambangBatasBawah + '\n' + 'warning ambang batas bawah: ' + warningBatasBawah + '\n' + 'Pengawasan Notifikasi: ' + notifPriority
             print(correction)
             
             print("Periksa kembali parameter baru, apakah sesuai? (Y/N)")
             checkCorrection = input()
             
             if checkCorrection == "Y":
-                updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode)
+                updateSensorDataToDB(idEdit , inisialSensor, identitasSensor, satuan, ambangBatasAtas, ambangBatasBawah, warningBatasAtas, warningBatasBawah , idNode , notifPriority)
                 
             mainMenu()
         else:
