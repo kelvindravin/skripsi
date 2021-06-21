@@ -51,6 +51,7 @@ class Pemantauan extends CI_Model
 			->join('sensor', 'sensor.idSensor = pengukuran.idSensor')
 			->where('DATE(waktu) BETWEEN "'. date('Y-m-d', strtotime($start)). '" and "'. date('Y-m-d', strtotime($end)).'"')
 			->where($parameterFilter)
+			->order_by('waktu', 'ASC')
 			->get('pengukuran');
 		return $query->result();
 	}

@@ -136,7 +136,7 @@ def getAllEmail():
 
 # opening thread and start sensing until it's turned off
 class sensorSense():
-    def __init__(self, interval = 2.5):
+    def __init__(self, interval = 0):
         self.interval = interval
 
         sensingThread = threading.Thread(target=self.run, args=())
@@ -185,6 +185,7 @@ class sensorSense():
         #to prevent email spam
         emailDelay = False
         delayCounter = 0
+        warningFlag = False
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
@@ -202,7 +203,6 @@ class sensorSense():
             if data != "":
                 parameters = data.split() #returns -> [T0,H0,L0]
                 emailWarningNotification = ""
-                warningFlag = False
                 
                 #splitting parameter from value and insert to DB
                 for value in parameters:
@@ -237,7 +237,7 @@ class sensorSense():
                     insertDataToDB(ids, nilaiPengukuran)
             
             if warningFlag and emailDelay == False:
-                print("sent!")
+#                 print("sent!")
                 self.sendWarningEmail(emailWarningNotification)
                 warningFlag = False
                 emailDelay = True
@@ -247,7 +247,7 @@ class sensorSense():
                 delayCounter -= 1
             
             if delayCounter == 0:
-                print("email delay was resetted, email will be sent again")
+#                 print("email delay was resetted, email will be sent again")
                 emailDelay = False
                 
             time.sleep(self.interval)
