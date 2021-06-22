@@ -153,7 +153,7 @@ class sensorSense():
         result = cursor.fetchone()
         
         mail_content = "Telah dideteksi keberadaan tanda bahaya dalam area pemeriksaan, dengan detail sebagai berikut :\n\n"
-        mail_end = "\n\n Harap berhati-hatilah dan periksa kembali keadaan tersebut! \n\n Home Monitoring System - 2017730022"
+        mail_end = "\nHarap berhati-hatilah dan periksa kembali keadaan tersebut! \nHome Monitoring System - 2017730022"
 
         content = mail_content + notif + mail_end
         
@@ -190,7 +190,7 @@ class sensorSense():
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
 #             data = "AH71.00 AT29.00 AL10.00 AC0.00 AA0.00 BP8.20 BK11.00"
-#             data = "AH11.00 AT17.00 AL0.00 AC0.00 AA0.00 BP6.20 BK0.00"
+#             data = "AH11.00 AT17.00 AL20.00 AC30.00 AA20.00 BP6.20 BK100.00"
 #             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
 #             print(data)
             
@@ -218,10 +218,11 @@ class sensorSense():
                             if float(nilaiPengukuran) > violationCheck[3]:
                                 warningFlag = True
                                 emailWarningNotification += "Nilai pada parameter " + violationCheck[1] + " bernilai :" + nilaiPengukuran + " " + violationCheck[2] + " melebihi ambang batas sejumlah " + str(violationCheck[3]) + " " + violationCheck[2]
+                                emailWarningNotification += "\n"
                             elif float(nilaiPengukuran) < violationCheck[4]:
                                 warningFlag = True
                                 emailWarningNotification += "Nilai pada parameter " + violationCheck[1] + " bernilai :" + nilaiPengukuran + " " + violationCheck[2] + " kurang dari ambang batas sejumlah " + str(violationCheck[4]) + " " + violationCheck[2]
-                            emailWarningNotification += "\n"
+                                emailWarningNotification += "\n"
                     
                     #getId -> getting namaNode and idSensor for insertion to db, returns namaNode, idSensor
                     idCursor = mydb.cursor(buffered=True)
@@ -265,7 +266,7 @@ def mainMenu():
     print("3. Daftar Account User Website Pemantauan")
     print("4. Update User Password")
     print("5. Update Notifikasi User")
-    print("6. Manage Parameter Sensor")
+    print("6. Manage Node Sensor dan Sensor Individual")
     print("7. Keluar")
     print("=============================================")
     print("Silahkan Masukkan Nomor Input :")
