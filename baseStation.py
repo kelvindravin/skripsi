@@ -20,7 +20,7 @@ serial = serial.Serial(
      parity=serial.PARITY_NONE,
      stopbits=serial.STOPBITS_ONE,
      bytesize=serial.EIGHTBITS,
-     timeout=3
+     timeout=2.75
  )
 
 #database details
@@ -136,7 +136,7 @@ def getAllEmail():
 
 # opening thread and start sensing until it's turned off
 class sensorSense():
-    def __init__(self, interval = 0):
+    def __init__(self, interval = 1):
         self.interval = interval
 
         sensingThread = threading.Thread(target=self.run, args=())
@@ -171,7 +171,7 @@ class sensorSense():
             text = message.as_string()
             session.sendmail(sender_address, receiver_address, text)
             session.quit()
-
+    
     def run(self):        
         ambangBatas = mydb.cursor(buffered=True)
 
@@ -192,7 +192,7 @@ class sensorSense():
 #             data = "AH71.00 AT29.00 AL10.00 AC0.00 AA0.00 BP8.20 BK11.00"
 #             data = "AH11.00 AT17.00 AL0.00 AC0.00 AA0.00 BP6.20 BK0.00"
 #             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
-            #print(data)
+            print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
             inisialSensor = mydb.cursor(buffered=True)
@@ -237,18 +237,18 @@ class sensorSense():
                     insertDataToDB(ids, nilaiPengukuran)
             
             if warningFlag and emailDelay == False:
-#                 print("sent!")
-                self.sendWarningEmail(emailWarningNotification)
+                threading.Thread(target=self.sendWarningEmail(emailWarningNotification)).start()
                 warningFlag = False
                 emailDelay = True
-                delayCounter = 20 #more or less is one minute long
+                delayCounter = 60 #one minute long
             
             if emailDelay:
                 delayCounter -= 1
             
             if delayCounter == 0:
-#                 print("email delay was resetted, email will be sent again")
                 emailDelay = False
+            
+#             print(str(emailDelay) + " " + str(delayCounter))
                 
             time.sleep(self.interval)
             
