@@ -192,7 +192,7 @@ class sensorSense():
 #             data = "AH71.00 AT29.00 AL10.00 AC0.00 AA0.00 BP8.20 BK11.00"
 #             data = "AH11.00 AT17.00 AL0.00 AC0.00 AA0.00 BP6.20 BK0.00"
 #             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
-            print(data)
+#             print(data)
             
             #inisialSensor -> returns array of identitas (ex : [T,H,L])
             inisialSensor = mydb.cursor(buffered=True)
