@@ -64,7 +64,7 @@
                 data: {},
                 success: function(data) {
                     // counting violation of detection for parameters
-                    console.log(data);
+                     console.log(data);
                     for (const value of data){
                         var lokasi = value.lokasiNode;
                         var waktu = value.waktu;
@@ -85,11 +85,11 @@
                         var span_warning = "<span class=\"badge badge-danger\">"
                         var span_close = "</span>";
                         
-                        if (ambangBatasAtas < nilai){ 
+                        if (parseInt(ambangBatasAtas) < parseInt(nilai)){ 
                             document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warningAmbangAtas,span_close);//warning ambang batas atas
-                        }else if(nilai < ambangBatasAtas && nilai >= ambangBatasBawah){
+                        }else if(parseInt(nilai) < parseInt(ambangBatasAtas) && parseInt(nilai) >= parseInt(ambangBatasBawah)){
                             document.getElementById(identitas + "_warning").innerHTML = span_safe.concat("Parameter terpantau aman!",span_close);//safe 
-                        }else if(nilai < ambangBatasBawah){
+                        }else if(parseInt(nilai) < parseInt(ambangBatasBawah)){
                             document.getElementById(identitas + "_warning").innerHTML = span_warning.concat(warningAmbangBawah,span_close);//warning ambang batas bawah
                         }else{
                             document.getElementById(identitas + "_warning").innerHTML = "-";//neutral 
