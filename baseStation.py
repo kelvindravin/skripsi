@@ -87,11 +87,11 @@ def insertUserToDB(email,password):
     mydb.commit()
     print("Account Registered!")
 
-def insertDataToDB(idSensor, nilaiPengukuran):
+def insertDataToDB(idSensor, nilaiPengukuran, status):
     cursor = mydb.cursor()
 
-    query = "INSERT INTO pengukuran (idSensor, waktu, nilaiPengukuran) VALUES (%s,%s,%s)"
-    val = (idSensor, datetime.now(), nilaiPengukuran)
+    query = "INSERT INTO pengukuran (idSensor, waktu, nilaiPengukuran, status) VALUES (%s,%s,%s,%s)"
+    val = (idSensor, datetime.now(), nilaiPengukuran, status)
 
     cursor.execute(query, val)
 
@@ -189,12 +189,11 @@ class sensorSense():
         
         while sensingStatus:            
             data = serial.readline().decode("ascii").strip()
-#             data = "AH71.00 AT29.00 AL10.00 AC0.00 AA0.00 BP8.20 BK11.00"
-#             data = "AH11.00 AT17.00 AL0.00 AC8704 AA20.00 BP6.20 BK100.00"
+#             data = "AH71.00 AT29.00 AL10.00 AC10.00 AA10.00 BP8.20 BK11.00"
 #             data = "AH50.00 AT25.00 AL0.00 AC0.00 AA0.00 BP7.00 BK0.00"
 #             print(data)
             
-            #inisialSensor -> returns array of identitas (ex : [T,H,L])
+#             #inisialSensor -> returns array of identitas (ex : [T,H,L])
             inisialSensor = mydb.cursor(buffered=True)
 
             inisialSensor.execute("""SELECT inisialSensor FROM sensor""")
@@ -210,6 +209,24 @@ class sensorSense():
                     parameterNode = value[0] #ex : A
                     parameterInisial = value[1] # ex : H
                     nilaiPengukuran = value[2:] # ex : 70
+                    
+                    #status asign for insertion to db
+                    idCursor = mydb.cursor(buffered=True)
+
+                    queryStatus = "SELECT ambangBatasAtas, ambangBatasBawah, warningAmbangBawah, warningAmbangAtas FROM sensor WHERE inisialSensor = %s"
+                    value = (parameterInisial,)
+                    idCursor.execute(queryStatus, value)
+                    
+                    preview = idCursor.fetchall()
+                    
+                    statusPengukuranSaatIni = ""                  
+                    
+                    if float(nilaiPengukuran) > preview[0][0] :
+                        statusPengukuranSaatIni = preview[0][3]
+                    elif float(nilaiPengukuran) < preview[0][1] :
+                        statusPengukuranSaatIni = preview[0][2]
+                    else :
+                        statusPengukuranSaatIni = "-"
                     
                     #violation checking for email warning
 
@@ -235,7 +252,7 @@ class sensorSense():
                     ids= idCursor.fetchall()[0][0]
                     
                     #inserting to database
-                    insertDataToDB(ids, nilaiPengukuran)
+                    insertDataToDB(ids, nilaiPengukuran, statusPengukuranSaatIni)
             
             if warningFlag and emailDelay == False:
                 threading.Thread(target=self.sendWarningEmail(emailWarningNotification)).start()
